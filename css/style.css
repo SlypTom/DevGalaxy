@@ -373,3 +373,74 @@ input:focus, textarea:focus {
     transform: scale(1.05);
     box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
 }
+
+/* --- SECTION INSCRIPTION --- */
+.inscription-section {
+    padding: 50px 25px;
+}
+
+.container-inscription {
+    display: flex; /* C'est ça qui remplace les tableaux pour la mise en page ! */
+    flex-wrap: wrap;
+    gap: 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+    background: rgba(13, 17, 41, 0.8);
+    padding: 40px;
+    border-radius: 15px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Formulaire */
+.inscription-form-wrapper {
+    flex: 1.5; /* Prend un peu plus de place que les infos */
+    min-width: 300px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #67e8f9; /* Cyan */
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    background-color: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 5px;
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    transition: 0.3s;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: #a855f7; /* Bordure violette au clic */
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+}
+
+/* Bouton */
+.inscription-btn-submit {
+    background: linear-gradient(45deg, #a855f7, #6366f1);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-submit:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+}
