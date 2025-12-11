@@ -2,7 +2,7 @@
     margin: 0;
 }
 body {
-    margin: 0 25px 0 25px;
+    margin: 0 25px 25px 25px;
     color: white;
     background-image: url(../img/background.png);
 }
@@ -178,4 +178,103 @@ footer {
     color: #475569;
     opacity: 0.4;
     letter-spacing: 0.1em;
+}
+
+/* --- SECTION PROGRAMME & TABLEAU --- */
+
+.programme-section {
+    padding: 50px 0;
+}
+
+.table-wrapper {
+    margin-top: 30px;
+    overflow-x: auto; /* Permet le scroll horizontal sur mobile */
+    border-radius: 10px;
+    background: rgba(13, 17, 41, 0.7); /* Fond sombre semi-transparent */
+    border: 1px solid rgba(148, 163, 184, 0.2); /* Bordure subtile */
+    backdrop-filter: blur(5px); /* Effet de flou derrière le tableau */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.events-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #e2e8f0;
+    text-align: left;
+}
+
+/* En-têtes */
+.events-table th {
+    background-color: rgba(99, 102, 241, 0.2); /* Violet léger */
+    color: #a5b4fc; /* Violet clair */
+    padding: 20px;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    border-bottom: 2px solid rgba(99, 102, 241, 0.4);
+}
+
+/* Cellules */
+.events-table td {
+    padding: 20px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.events-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Effet au survol */
+.events-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Colonne Horaire */
+.time {
+    color: #67e8f9; /* Cyan Néon */
+    font-weight: bold;
+    font-family: monospace;
+    font-size: 1.1rem;
+}
+
+/* Titres et Descriptions */
+.event-title {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    color: #ffffff;
+}
+
+.event-desc {
+    font-size: 0.9rem;
+    color: #94a3b8; /* Gris bleuté */
+    font-style: italic;
+}
+
+/* Badges des Salles */
+.badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.badge-jupiter {
+    background-color: rgba(168, 85, 247, 0.2);
+    color: #d8b4fe;
+    border: 1px solid rgba(168, 85, 247, 0.5);
+}
+
+.badge-mars {
+    background-color: rgba(249, 115, 22, 0.2);
+    color: #fdba74;
+    border: 1px solid rgba(249, 115, 22, 0.5);
+}
+
+.badge-saturne {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+    border: 1px solid rgba(16, 185, 129, 0.5);
 }
