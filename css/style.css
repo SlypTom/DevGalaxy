@@ -188,11 +188,11 @@ footer {
 
 .table-wrapper {
     margin-top: 30px;
-    overflow-x: auto; /* Permet le scroll horizontal sur mobile */
+    overflow-x: auto;
     border-radius: 10px;
-    background: rgba(13, 17, 41, 0.7); /* Fond sombre semi-transparent */
-    border: 1px solid rgba(148, 163, 184, 0.2); /* Bordure subtile */
-    backdrop-filter: blur(5px); /* Effet de flou derrière le tableau */
+    background: rgba(13, 17, 41, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    backdrop-filter: blur(5px);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
@@ -205,8 +205,8 @@ footer {
 
 /* En-têtes */
 .events-table th {
-    background-color: rgba(99, 102, 241, 0.2); /* Violet léger */
-    color: #a5b4fc; /* Violet clair */
+    background-color: rgba(99, 102, 241, 0.2);
+    color: #a5b4fc;
     padding: 20px;
     text-transform: uppercase;
     font-size: 0.9rem;
@@ -224,20 +224,17 @@ footer {
     border-bottom: none;
 }
 
-/* Effet au survol */
 .events-table tbody tr:hover {
     background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Colonne Horaire */
 .time {
-    color: #67e8f9; /* Cyan Néon */
+    color: #67e8f9;
     font-weight: bold;
     font-family: monospace;
     font-size: 1.1rem;
 }
 
-/* Titres et Descriptions */
 .event-title {
     display: block;
     font-size: 1.1rem;
@@ -247,11 +244,10 @@ footer {
 
 .event-desc {
     font-size: 0.9rem;
-    color: #94a3b8; /* Gris bleuté */
+    color: #94a3b8;
     font-style: italic;
 }
 
-/* Badges des Salles */
 .badge {
     padding: 5px 12px;
     border-radius: 20px;
@@ -285,7 +281,7 @@ footer {
 }
 
 .container-contact {
-    display: flex; /* C'est ça qui remplace les tableaux pour la mise en page ! */
+    display: flex;
     flex-wrap: wrap;
     gap: 40px;
     max-width: 1000px;
@@ -299,13 +295,13 @@ footer {
 
 /* Colonne Gauche (Infos) */
 .contact-info {
-    flex: 1; /* Prend 1 part de l'espace */
+    flex: 1;
     min-width: 300px;
 }
 
 .contact-info h2 {
     text-align: left;
-    color: #a855f7; /* Violet néon */
+    color: #a855f7;
     margin-bottom: 20px;
 }
 
@@ -313,7 +309,7 @@ footer {
     margin-top: 30px;
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Espace entre les items */
+    gap: 15px;
 }
 
 .info-list li {
@@ -323,7 +319,7 @@ footer {
 
 /* Colonne Droite (Formulaire) */
 .contact-form-wrapper {
-    flex: 1.5; /* Prend un peu plus de place que les infos */
+    flex: 1.5;
     min-width: 300px;
 }
 
@@ -334,7 +330,7 @@ footer {
 label {
     display: block;
     margin-bottom: 8px;
-    color: #67e8f9; /* Cyan */
+    color: #67e8f9;
     font-family: 'Orbitron', sans-serif;
     font-size: 0.9rem;
 }
@@ -352,7 +348,7 @@ input, textarea {
 
 input:focus, textarea:focus {
     outline: none;
-    border-color: #a855f7; /* Bordure violette au clic */
+    border-color: #a855f7;
     box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
 }
 
@@ -381,7 +377,7 @@ input:focus, textarea:focus {
 
 /* Formulaire */
 .inscription-form-wrapper {
-    flex: 1.5; /* Prend un peu plus de place que les infos */
+    flex: 1.5;
     min-width: 300px;
 }
 
@@ -392,7 +388,7 @@ input:focus, textarea:focus {
 label {
     display: block;
     margin-bottom: 8px;
-    color: #67e8f9; /* Cyan */
+    color: #67e8f9;
     font-family: 'Orbitron', sans-serif;
     font-size: 0.9rem;
 }
@@ -410,7 +406,7 @@ input, textarea {
 
 input:focus, textarea:focus {
     outline: none;
-    border-color: #a855f7; /* Bordure violette au clic */
+    border-color: #a855f7;
     box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
 }
 
@@ -445,7 +441,7 @@ input:focus, textarea:focus {
     padding: 15px;
     background: rgba(13, 17, 41, 0.6);
     border-radius: 8px;
-    text-align: right; /* Filtre à droite comme souvent sur les sites e-com */
+    text-align: right;
     border-bottom: 1px solid #334155;
 }
 
@@ -458,10 +454,10 @@ input:focus, textarea:focus {
     gap: 10px;
 }
 
-/* 2. La Grille (Responsive) */
+/* 2. La Grille */
 .artists-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Auto-responsive */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 30px;
     max-width: 1200px;
     margin: 0 auto;
@@ -470,7 +466,7 @@ input:focus, textarea:focus {
 
 /* 3. La Carte Artiste */
 .artist-card {
-    background: rgba(30, 41, 59, 0.7); /* Fond sombre */
+    background: rgba(30, 41, 59, 0.7);
     border: 1px solid #475569;
     border-radius: 12px;
     overflow: hidden;
@@ -495,12 +491,12 @@ input:focus, textarea:focus {
     padding-top: 20px;
 }
 
-/* Avatar Rond (simulation d'image) */
+/* Avatar Rond */
 .avatar-placeholder.big {
     width: 100px;
     height: 100px;
     border-radius: 50%;
-    border: 3px solid #a855f7; /* Violet */
+    border: 3px solid #a855f7;
     background: #0f172a;
     display: flex;
     align-items: center;
@@ -527,7 +523,7 @@ input:focus, textarea:focus {
 }
 
 .artist-role {
-    color: #67e8f9; /* Cyan */
+    color: #67e8f9;
     font-size: 0.9rem;
     margin-bottom: 10px;
     display: block;
@@ -542,12 +538,12 @@ input:focus, textarea:focus {
     flex-grow: 1;
 }
 
-/* 4. Section Planning (Différence Programmé / Non Programmé) */
+/* 4. Section Planning */
 .artist-schedule {
     background: rgba(15, 23, 42, 0.5);
     padding: 10px;
     border-radius: 6px;
-    border-left: 3px solid #a855f7; /* Marqueur visuel */
+    border-left: 3px solid #a855f7;
 }
 
 .artist-schedule h4 {
@@ -562,7 +558,7 @@ input:focus, textarea:focus {
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Reset du gap: 200px du header */
+    gap: 8px;
 }
 
 .artist-schedule li {
@@ -583,13 +579,13 @@ input:focus, textarea:focus {
     color: #cbd5e1;
     font-style: italic;
     font-size: 0.8rem;
-    margin-left: auto; /* Pousse à droite */
+    margin-left: auto;
     margin-right: 10px;
 }
 
 /* Style spécifique pour "Non Programmé" */
 .artist-card.not-programmed {
-    opacity: 0.7; /* Visuellement un peu plus effacé */
+    opacity: 0.7;
     border-color: #334155;
 }
 
@@ -619,7 +615,7 @@ input:focus, textarea:focus {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
-    align-items: flex-end; /* Aligne le bouton avec les inputs */
+    align-items: flex-end;
     justify-content: center;
 }
 
@@ -628,7 +624,7 @@ input:focus, textarea:focus {
     flex-direction: column;
     gap: 8px;
     flex: 1;
-    min-width: 200px; /* Responsive */
+    min-width: 200px;
 }
 
 .form-group-inline label {
@@ -651,14 +647,14 @@ input:focus, textarea:focus {
 
 .search-form input[type="text"]:focus,
 .search-form select:focus {
-    border-color: #06b6d4; /* Cyan focus */
+    border-color: #06b6d4;
     outline: none;
 }
 
 .checkbox-group {
     flex: 0 0 auto;
     justify-content: center;
-    padding-bottom: 12px; /* Ajustement vertical */
+    padding-bottom: 12px;
 }
 
 /* Bouton Rechercher */
@@ -671,7 +667,7 @@ input:focus, textarea:focus {
     border-radius: 6px;
     cursor: pointer;
     transition: 0.3s;
-    height: 44px; /* Même hauteur que les inputs */
+    height: 44px;
 }
 
 .btn-search:hover {
@@ -703,7 +699,7 @@ input:focus, textarea:focus {
     border-color: #6366f1;
 }
 
-/* En-tête de carte (Image simulée) */
+/* En-tête de carte */
 .card-header {
     position: relative;
     height: 140px;
@@ -767,7 +763,7 @@ input:focus, textarea:focus {
     line-height: 1.4;
 }
 
-/* Pied de carte (Statut) */
+/* Pied de carte */
 .card-footer {
     padding: 15px 20px;
     background: rgba(15, 23, 42, 0.6);
@@ -784,10 +780,10 @@ input:focus, textarea:focus {
 
 /* Style Programmé */
 .status-indicator.active {
-    color: #67e8f9; /* Cyan */
+    color: #67e8f9;
 }
 
-/* Style Catalogue (Non Programmé) */
+/* Style Catalogue */
 .status-indicator.inactive {
     color: #94a3b8; /* Gris */
     font-style: italic;
@@ -796,9 +792,9 @@ input:focus, textarea:focus {
 
 /* Correction des liens sur les cartes */
 .card-link {
-    text-decoration: none; /* Enlève le soulignement */
-    color: inherit;        /* Garde la couleur blanche du texte */
-    display: block;        /* Important pour que le lien prenne toute la place */
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
 
 /* Optionnel : garde l'effet de hover sur la carte même avec le lien */
@@ -834,7 +830,7 @@ input:focus, textarea:focus {
     justify-content: center;
 }
 
-/* Avatar Géant (Image 2 : Photo grand format) */
+/* Avatar Géant */
 .avatar-placeholder.big-profile {
     width: 200px;
     height: 200px;
@@ -879,16 +875,14 @@ input:focus, textarea:focus {
 
 /* =========================================
    VERSION MOBILE (RESPONSIVE)
-   C/* =======================================================
-   VERSION MOBILE (S'applique uniquement sous 768px)
    ======================================================= */
 
 @media screen and (max-width: 768px) {
 
     /* --- 1. GLOBAL & MARGES --- */
     body {
-        margin: 0 !important; /* On utilise tout l'écran */
-        padding: 10px; /* Petite marge interne de sécurité */
+        margin: 0 !important;
+        padding: 10px;
     }
 
     .center, .presentation, .page-artistes {
@@ -896,40 +890,40 @@ input:focus, textarea:focus {
         width: 100% !important;
     }
 
-    /* --- 2. HEADER & MENU (Critère Image 5 : Lisible et utilisable) --- */
+    /* --- 2. HEADER & MENU --- */
     header {
-        flex-direction: column !important; /* Empile les éléments verticalement */
-        height: auto !important; /* Laisse la hauteur s'adapter */
+        flex-direction: column !important;
+        height: auto !important;
         padding: 20px 10px;
-        gap: 20px; /* Espace entre Logo, Menu et Bouton */
+        gap: 20px;
     }
 
     .logoTitre {
         width: 100%;
-        justify-content: center; /* Centre le logo */
+        justify-content: center;
         padding-left: 0 !important;
         margin-bottom: 10px;
     }
 
     .logoTitre img {
-        width: 50px; /* Taille raisonnable pour le logo mobile */
+        width: 50px;
     }
 
     nav {
-        width: 100%; /* Prend toute la largeur */
+        width: 100%;
     }
 
     nav ul {
-        flex-direction: column !important; /* Menu vertical */
-        gap: 15px !important; /* Remplace l'écart de 200px par un petit écart */
+        flex-direction: column !important;
+        gap: 15px !important;
         padding: 0;
-        align-items: center; /* Centre les liens */
+        align-items: center;
     }
 
     nav li {
         width: 100%;
         text-align: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Petit trait de séparation */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         padding-bottom: 8px;
     }
 
@@ -937,20 +931,19 @@ input:focus, textarea:focus {
         width: 100%;
         text-align: center;
         margin-top: 10px;
-        display: block; /* S'assure qu'il prend la largeur */
+        display: block;
     }
 
-    /* --- 3. GRILLES MONO-COLONNE (Critère Image 4) --- */
+    /* 3. GRILLES MONO-COLONNE */
     /* Force 1 seule colonne pour Artistes et Prestations */
     .artists-grid,
     .prestations-grid {
         display: grid !important;
-        grid-template-columns: 1fr !important; /* 1 colonne prenant 100% */
+        grid-template-columns: 1fr !important;
         gap: 20px;
         padding: 0;
     }
 
-    /* Les cartes prennent toute la largeur disponible */
     .artist-card,
     .prestation-card {
         width: 100% !important;
@@ -959,7 +952,7 @@ input:focus, textarea:focus {
 
     /* --- 4. FORMULAIRES & CONTACT --- */
     .container-contact {
-        flex-direction: column !important; /* Empile Infos et Formulaire */
+        flex-direction: column !important;
         padding: 20px !important;
     }
 
@@ -968,18 +961,18 @@ input:focus, textarea:focus {
     }
 
     .form-group-inline {
-        width: 100% !important; /* Champs de recherche en pleine largeur */
+        width: 100% !important;
     }
 
     /* --- 5. TABLEAU (Scroll horizontal pour éviter de casser le site) --- */
     .table-wrapper {
         display: block !important;
         width: 100% !important;
-        overflow-x: auto !important; /* Barre de défilement horizontale si nécessaire */
-        -webkit-overflow-scrolling: touch; /* Scroll fluide sur iPhone */
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
     }
 
     .events-table {
-        min-width: 600px; /* Force le tableau à garder une taille lisible (déclenche le scroll) */
+        min-width: 600px;
     }
 }
