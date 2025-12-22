@@ -444,3 +444,365 @@ input:focus, textarea:focus {
     transform: scale(1.05);
     box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
 }
+
+/* --- PAGE ARTISTES --- */
+
+.page-artistes {
+    padding: 20px 0;
+}
+
+/* 1. Zone de Filtre */
+.filter-section {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 15px;
+    background: rgba(13, 17, 41, 0.6);
+    border-radius: 8px;
+    text-align: right; /* Filtre à droite comme souvent sur les sites e-com */
+    border-bottom: 1px solid #334155;
+}
+
+.checkbox-container {
+    color: #a5b4fc;
+    cursor: pointer;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 2. La Grille (Responsive) */
+.artists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Auto-responsive */
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 3. La Carte Artiste */
+.artist-card {
+    background: rgba(30, 41, 59, 0.7); /* Fond sombre */
+    border: 1px solid #475569;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.artist-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(168, 85, 247, 0.3);
+    border-color: #a855f7;
+}
+
+/* Photo */
+.artist-photo {
+    height: 150px;
+    background: linear-gradient(to bottom, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 1));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 20px;
+}
+
+/* Avatar Rond (simulation d'image) */
+.avatar-placeholder.big {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid #a855f7; /* Violet */
+    background: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+}
+
+/* Contenu */
+.artist-content {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.artist-content h3 {
+    margin: 0;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+}
+
+.artist-role {
+    color: #67e8f9; /* Cyan */
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    display: block;
+    font-weight: bold;
+}
+
+.artist-bio {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+/* 4. Section Planning (Différence Programmé / Non Programmé) */
+.artist-schedule {
+    background: rgba(15, 23, 42, 0.5);
+    padding: 10px;
+    border-radius: 6px;
+    border-left: 3px solid #a855f7; /* Marqueur visuel */
+}
+
+.artist-schedule h4 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #a5b4fc;
+    margin-bottom: 8px;
+}
+
+.artist-schedule ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Reset du gap: 200px du header */
+}
+
+.artist-schedule li {
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 4px;
+}
+
+.schedule-time {
+    color: #67e8f9;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.schedule-room {
+    color: #cbd5e1;
+    font-style: italic;
+    font-size: 0.8rem;
+    margin-left: auto; /* Pousse à droite */
+    margin-right: 10px;
+}
+
+/* Style spécifique pour "Non Programmé" */
+.artist-card.not-programmed {
+    opacity: 0.7; /* Visuellement un peu plus effacé */
+    border-color: #334155;
+}
+
+.no-schedule {
+    color: #64748b;
+    font-size: 0.85rem;
+    padding: 10px;
+    text-align: center;
+    background: rgba(0,0,0,0.2);
+    border-radius: 6px;
+}
+
+/* --- PAGE PRESTATIONS --- */
+
+/* 1. Barre de Recherche Avancée */
+.search-section {
+    background: rgba(13, 17, 41, 0.8);
+    padding: 25px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    max-width: 1200px;
+    margin: 0 auto 40px auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.search-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-end; /* Aligne le bouton avec les inputs */
+    justify-content: center;
+}
+
+.form-group-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 200px; /* Responsive */
+}
+
+.form-group-inline label {
+    font-size: 0.85rem;
+    color: #a5b4fc;
+    font-weight: bold;
+}
+
+/* Styles des Inputs et Selects */
+.search-form input[type="text"],
+.search-form select {
+    padding: 12px;
+    background-color: #0f172a;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.95rem;
+}
+
+.search-form input[type="text"]:focus,
+.search-form select:focus {
+    border-color: #06b6d4; /* Cyan focus */
+    outline: none;
+}
+
+.checkbox-group {
+    flex: 0 0 auto;
+    justify-content: center;
+    padding-bottom: 12px; /* Ajustement vertical */
+}
+
+/* Bouton Rechercher */
+.btn-search {
+    background: #06b6d4;
+    color: #0f172a;
+    border: none;
+    padding: 12px 25px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    height: 44px; /* Même hauteur que les inputs */
+}
+
+.btn-search:hover {
+    background: #22d3ee;
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+}
+
+/* 2. Grille Prestations */
+.prestations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.prestation-card {
+    background: rgba(30, 41, 59, 0.6);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #334155;
+    transition: transform 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.prestation-card:hover {
+    transform: translateY(-5px);
+    border-color: #6366f1;
+}
+
+/* En-tête de carte (Image simulée) */
+.card-header {
+    position: relative;
+    height: 140px;
+}
+
+.prestation-img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.2);
+    font-family: monospace;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.category-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.category-badge.backend { background: #7c3aed; }
+.category-badge.frontend { background: #ea580c; }
+.category-badge.security { background: #059669; }
+
+/* Corps de carte */
+.card-body {
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.card-body h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.card-body .author {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-bottom: 15px;
+}
+
+.card-body .author strong {
+    color: #e2e8f0;
+}
+
+.card-body .description {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    line-height: 1.4;
+}
+
+/* Pied de carte (Statut) */
+.card-footer {
+    padding: 15px 20px;
+    background: rgba(15, 23, 42, 0.6);
+    border-top: 1px solid #334155;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+/* Style Programmé */
+.status-indicator.active {
+    color: #67e8f9; /* Cyan */
+}
+
+/* Style Catalogue (Non Programmé) */
+.status-indicator.inactive {
+    color: #94a3b8; /* Gris */
+    font-style: italic;
+    font-weight: normal;
+}
