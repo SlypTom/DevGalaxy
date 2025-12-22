@@ -892,78 +892,107 @@ input:focus, textarea:focus {
 
 /* =========================================
    VERSION MOBILE (RESPONSIVE)
-   Critères : Grilles mono-colonne & Menu lisible
-   ========================================= */
+   C/* =======================================================
+   VERSION MOBILE (S'applique uniquement sous 768px)
+   ======================================================= */
 
 @media screen and (max-width: 768px) {
 
-    /* 1. HEADER & MENU (Critère Image 5) */
+    /* --- 1. GLOBAL & MARGES --- */
+    body {
+        margin: 0 !important; /* On utilise tout l'écran */
+        padding: 10px; /* Petite marge interne de sécurité */
+    }
+
+    .center, .presentation, .page-artistes {
+        padding: 10px !important;
+        width: 100% !important;
+    }
+
+    /* --- 2. HEADER & MENU (Critère Image 5 : Lisible et utilisable) --- */
     header {
-        flex-direction: column; /* Empile le logo, le menu et le bouton */
-        padding: 15px;
-        gap: 20px;
+        flex-direction: column !important; /* Empile les éléments verticalement */
+        height: auto !important; /* Laisse la hauteur s'adapter */
+        padding: 20px 10px;
+        gap: 20px; /* Espace entre Logo, Menu et Bouton */
     }
 
     .logoTitre {
-        padding-left: 0;
-        justify-content: center;
         width: 100%;
+        justify-content: center; /* Centre le logo */
+        padding-left: 0 !important;
         margin-bottom: 10px;
     }
 
-    /* On transforme le menu horizontal en vertical pour qu'il soit lisible */
+    .logoTitre img {
+        width: 50px; /* Taille raisonnable pour le logo mobile */
+    }
+
+    nav {
+        width: 100%; /* Prend toute la largeur */
+    }
+
     nav ul {
-        flex-direction: column;
-        gap: 15px; /* On remplace les 200px énormes par un petit espace */
+        flex-direction: column !important; /* Menu vertical */
+        gap: 15px !important; /* Remplace l'écart de 200px par un petit écart */
         padding: 0;
-        text-align: center;
+        align-items: center; /* Centre les liens */
     }
 
     nav li {
         width: 100%;
-        border-bottom: 1px solid rgba(255,255,255,0.1); /* Petit séparateur */
-        padding-bottom: 5px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Petit trait de séparation */
+        padding-bottom: 8px;
     }
 
-    /* Bouton Inscription centré */
     .btn-inscription {
         width: 100%;
         text-align: center;
         margin-top: 10px;
+        display: block; /* S'assure qu'il prend la largeur */
     }
 
-    /* 2. GRILLES MONO-COLONNE (Critère Image 4) */
-    /* Force les grilles Artistes et Prestations à n'avoir qu'une seule colonne */
+    /* --- 3. GRILLES MONO-COLONNE (Critère Image 4) --- */
+    /* Force 1 seule colonne pour Artistes et Prestations */
     .artists-grid,
     .prestations-grid {
-        grid-template-columns: 1fr !important; /* 1fr = prend toute la largeur */
+        display: grid !important;
+        grid-template-columns: 1fr !important; /* 1 colonne prenant 100% */
         gap: 20px;
-        padding: 10px;
+        padding: 0;
     }
 
-    /* 3. AJUSTEMENTS GLOBAUX (Pour que rien ne dépasse) */
-    body {
-        margin: 10px; /* Marges réduites sur mobile */
+    /* Les cartes prennent toute la largeur disponible */
+    .artist-card,
+    .prestation-card {
+        width: 100% !important;
+        margin: 0 !important;
     }
 
-    .presentation,
-    .programme-section,
-    .page-artistes {
-        padding: 20px 10px; /* Moins de padding sur les côtés */
-    }
-
+    /* --- 4. FORMULAIRES & CONTACT --- */
     .container-contact {
-        flex-direction: column; /* Contact : Infos au-dessus du formulaire */
-        padding: 20px;
+        flex-direction: column !important; /* Empile Infos et Formulaire */
+        padding: 20px !important;
     }
 
-    img {
-        width: 60%; /* Logo un peu plus grand sur mobile */
+    .search-form {
+        flex-direction: column !important;
     }
 
-    /* Ajustement du tableau programme pour qu'il reste scrollable si trop large */
+    .form-group-inline {
+        width: 100% !important; /* Champs de recherche en pleine largeur */
+    }
+
+    /* --- 5. TABLEAU (Scroll horizontal pour éviter de casser le site) --- */
     .table-wrapper {
-        width: 100%;
-        overflow-x: scroll;
+        display: block !important;
+        width: 100% !important;
+        overflow-x: auto !important; /* Barre de défilement horizontale si nécessaire */
+        -webkit-overflow-scrolling: touch; /* Scroll fluide sur iPhone */
+    }
+
+    .events-table {
+        min-width: 600px; /* Force le tableau à garder une taille lisible (déclenche le scroll) */
     }
 }
