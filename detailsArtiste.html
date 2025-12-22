@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Profil Artiste - DevGalaxy</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+  <div class="space-background"></div>
+  <div class="logoTitre">
+    <img src="img/logo.png" alt="logo">
+    <h2>Dev Galaxy</h2>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="artistes.html">Artistes</a></li>
+      <li><a href="prestations.html">Prestations</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="page-artistes"> <div class="center">
+  <a href="artistes.html" class="btn-back">← Retour à la liste</a>
+</div>
+
+  <section class="artist-profile-full">
+    <div class="profile-header">
+      <div class="avatar-placeholder big-profile">SC</div>
+
+      <div class="profile-info">
+        <h1>Sarah <span class="neon-text">"Loop"</span> Connor</h1>
+        <h2 class="artist-role">Lead Security Engineer</h2>
+
+        <p class="bio-full">
+          Ancienne White Hat reconvertie dans la protection des infrastructures critiques, Sarah a passé les dix dernières années à sécuriser des banques et des gouvernements.
+          <br><br>
+          Elle est connue pour avoir stoppé l'attaque "Skynet" en 2021 avec un simple script Python écrit en 3 minutes. Elle ne croit pas aux pare-feux, elle croit à l'architecture blindée.
+        </p>
+
+        <ul class="profile-stats">
+          <li>📅 <strong>Présence :</strong> Samedi 15 Nov.</li>
+          <li>📍 <strong>Origine :</strong> Los Angeles, USA</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="artist-prestations-list">
+    <div class="center">
+      <h3>Ses Missions Planifiées</h3>
+      <p>Cliquez pour voir les détails techniques.</p>
+    </div>
+
+    <div class="prestations-grid" style="margin-top: 20px;">
+
+      <a href="detailsPrestation.html" class="card-link">
+        <article class="prestation-card programmed">
+          <div class="card-header">
+            <span class="category-badge backend">Backend</span>
+            <div class="prestation-img-placeholder" style="background: linear-gradient(45deg, #1e1b4b, #312e81);">
+              <code>SQL_INJECT</code>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>Injections SQL en Apesanteur</h3>
+            <p class="description">Protéger vos bases de données contre les attaques.</p>
+          </div>
+          <div class="card-footer">
+            <div class="status-indicator active">
+              <span>📅 10:30 - Salle Jupiter</span>
+            </div>
+          </div>
+        </article>
+      </a>
+
+      <a href="detailsPrestation.html" class="card-link">
+        <article class="prestation-card programmed">
+          <div class="card-header">
+            <span class="category-badge security">Débat</span>
+            <div class="prestation-img-placeholder" style="background: linear-gradient(45deg, #7c2d12, #431407);">
+              <code>VS</code>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>Débat : Tabs vs Spaces</h3>
+            <p class="description">Le combat final pour trancher la question.</p>
+          </div>
+          <div class="card-footer">
+            <div class="status-indicator active">
+              <span>📅 16:00 - Salle Mars</span>
+            </div>
+          </div>
+        </article>
+      </a>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>© 2026 DevGalaxy</footer>
+</body>
+</html>

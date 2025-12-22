@@ -806,3 +806,164 @@ input:focus, textarea:focus {
     font-style: italic;
     font-weight: normal;
 }
+
+/* Correction des liens sur les cartes */
+.card-link {
+    text-decoration: none; /* Enlève le soulignement */
+    color: inherit;        /* Garde la couleur blanche du texte */
+    display: block;        /* Important pour que le lien prenne toute la place */
+}
+
+/* Optionnel : garde l'effet de hover sur la carte même avec le lien */
+.card-link:hover .prestation-card {
+    transform: translateY(-5px);
+    border-color: #6366f1;
+}
+
+/* --- PAGE DÉTAIL ARTISTE --- */
+
+.btn-back {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #94a3b8;
+    text-decoration: underline;
+}
+
+.artist-profile-full {
+    background: rgba(13, 17, 41, 0.8);
+    border: 1px solid #334155;
+    border-radius: 15px;
+    padding: 40px;
+    max-width: 1000px;
+    margin: 0 auto 50px auto;
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+}
+
+.profile-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Avatar Géant (Image 2 : Photo grand format) */
+.avatar-placeholder.big-profile {
+    width: 200px;
+    height: 200px;
+    font-size: 3rem;
+    border: 4px solid #a855f7;
+    box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+    border-radius: 50%;
+    background: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.profile-info {
+    flex: 1;
+    min-width: 300px;
+}
+
+.profile-info h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.5rem;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.bio-full {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.profile-stats {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+    color: #67e8f9;
+}
+
+/* =========================================
+   VERSION MOBILE (RESPONSIVE)
+   Critères : Grilles mono-colonne & Menu lisible
+   ========================================= */
+
+@media screen and (max-width: 768px) {
+
+    /* 1. HEADER & MENU (Critère Image 5) */
+    header {
+        flex-direction: column; /* Empile le logo, le menu et le bouton */
+        padding: 15px;
+        gap: 20px;
+    }
+
+    .logoTitre {
+        padding-left: 0;
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    /* On transforme le menu horizontal en vertical pour qu'il soit lisible */
+    nav ul {
+        flex-direction: column;
+        gap: 15px; /* On remplace les 200px énormes par un petit espace */
+        padding: 0;
+        text-align: center;
+    }
+
+    nav li {
+        width: 100%;
+        border-bottom: 1px solid rgba(255,255,255,0.1); /* Petit séparateur */
+        padding-bottom: 5px;
+    }
+
+    /* Bouton Inscription centré */
+    .btn-inscription {
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    /* 2. GRILLES MONO-COLONNE (Critère Image 4) */
+    /* Force les grilles Artistes et Prestations à n'avoir qu'une seule colonne */
+    .artists-grid,
+    .prestations-grid {
+        grid-template-columns: 1fr !important; /* 1fr = prend toute la largeur */
+        gap: 20px;
+        padding: 10px;
+    }
+
+    /* 3. AJUSTEMENTS GLOBAUX (Pour que rien ne dépasse) */
+    body {
+        margin: 10px; /* Marges réduites sur mobile */
+    }
+
+    .presentation,
+    .programme-section,
+    .page-artistes {
+        padding: 20px 10px; /* Moins de padding sur les côtés */
+    }
+
+    .container-contact {
+        flex-direction: column; /* Contact : Infos au-dessus du formulaire */
+        padding: 20px;
+    }
+
+    img {
+        width: 60%; /* Logo un peu plus grand sur mobile */
+    }
+
+    /* Ajustement du tableau programme pour qu'il reste scrollable si trop large */
+    .table-wrapper {
+        width: 100%;
+        overflow-x: scroll;
+    }
+}
