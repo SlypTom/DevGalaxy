@@ -1,4 +1,6 @@
 <?php
+require_once 'config/db.php';
+
 include 'header-footer/header.php';
 ?>
 <main class="page-artistes">
@@ -15,104 +17,95 @@ include 'header-footer/header.php';
       Afficher uniquement les pilotes programmés
     </label>
   </div>
+    <div class="artists-grid">
+        <?php
+        // 1. On récupère tous les artistes (ceux qui ne sont pas organisateurs).
+        $sql_artistes = "SELECT * FROM web2026_Utilisateur WHERE est_organisateur = 0";
+        $stmt_artistes = $pdo->query($sql_artistes);
+        $artistes = $stmt_artistes->fetchAll();
 
-  <div class="artists-grid">
+        foreach ($artistes as $artiste):
+            // Création des initiales
+            $initiales = strtoupper(substr($artiste['prenom'], 0, 1) . substr($artiste['nom'], 0, 1));
 
-    <a href="detailsArtiste.php" class="card-link">
-      <article class="artist-card">
-        <div class="artist-photo">
-          <div class="avatar-placeholder big">SC</div>
-        </div>
-        <div class="artist-content">
-          <h3>Sarah "Loop" Connor</h3>
-          <span class="artist-role">Lead Security Engineer</span>
-          <p class="artist-bio">Ancienne hackeuse, elle traque les failles comme des aliens. Experte en Python et Cryptographie.</p>
+            // 2. On cherche les missions planifiées POUR CET ARTISTE UNIQUEMENT
+            $sql_missions = "
+            SELECT p.heure_debut, s.nom_scene, pr.intitule 
+            FROM web2026_Programmation p
+            JOIN web2026_Prestation pr ON p.prestation_id = pr.pid
+            JOIN web2026_Scene s ON p.scene_id = s.sid
+            WHERE pr.artiste_id = :artiste_id
+            ORDER BY p.heure_debut ASC
+        ";
+            // On utilise prepare() car on injecte une variable (artiste_id) en toute sécurité
+            $stmt_missions = $pdo->prepare($sql_missions);
+            $stmt_missions->execute(['artiste_id' => $artiste['uid']]);
+            $missions = $stmt_missions->fetchAll();
 
-          <div class="artist-schedule">
-            <h4>📅 Missions planifiées :</h4>
-            <ul>
-              <li>
-                <span class="schedule-time">10:30</span>
-                <span class="schedule-room">Salle Jupiter</span>
-                <span class="schedule-title">Injections SQL</span>
-              </li>
-              <li>
-                <span class="schedule-time">16:00</span>
-                <span class="schedule-room">Salle Mars</span>
-                <span class="schedule-title">Débat : Tabs vs Spaces</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </article>
-    </a>
+            // 3. L'artiste est-il programmé ? (A-t-il au moins une mission ?)
+            $est_programme = (count($missions) > 0);
 
-    <a href="detailsArtiste.php" class="card-link">
-      <article class="artist-card">
-        <div class="artist-photo">
-          <div class="avatar-placeholder big" style="border-color: #f97316;">DB</div>
-        </div>
-        <div class="artist-content">
-          <h3>Dave "Pixel" Bowman</h3>
-          <span class="artist-role">Creative Director</span>
-          <p class="artist-bio">Architecte visuel. Il ne voit pas le monde en atomes mais en Flexbox et CSS Grid.</p>
+            // On définit la classe de la carte (transparente s'il n'est pas programmé).
+            $classe_carte = $est_programme ? "artist-card" : "artist-card not-programmed";
 
-          <div class="artist-schedule">
-            <h4>📅 Missions planifiées :</h4>
-            <ul>
-              <li>
-                <span class="schedule-time">11:45</span>
-                <span class="schedule-room">Salle Mars</span>
-                <span class="schedule-title">CSS Grid : Alignement</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </article>
-    </a>
+            // 4. Gestion de la couleur de l'avatar (Le cercle)
+            $style_avatar = "";
+            if (!$est_programme) {
+                // Gris s'il n'a pas de mission
+                $style_avatar = 'style="border-color: #94a3b8; color: #94a3b8;"';
+            } else {
+                // Couleur basée sur sa première salle
+                $premiere_salle = strtolower($missions[0]['nom_scene']);
+                if (strpos($premiere_salle, 'mars') !== false) {
+                    $style_avatar = 'style="border-color: #f97316;"'; // Orange Mars
+                } elseif (strpos($premiere_salle, 'saturne') !== false) {
+                    $style_avatar = 'style="border-color: #10b981;"'; // Vert Saturne
+                } else {
+                    $style_avatar = 'style="border-color: #a855f7;"'; // Violet Jupiter par défaut
+                }
+            }
+            ?>
 
-    <a href="detailsArtiste.php" class="card-link">
-      <article class="artist-card">
-        <div class="artist-photo">
-          <div class="avatar-placeholder big" style="border-color: #ef4444;">HAL</div>
-        </div>
-        <div class="artist-content">
-          <h3>H.A.L. 9000</h3>
-          <span class="artist-role">IA Autonome</span>
-          <p class="artist-bio">Intelligence artificielle devenue conférencière. Elle promet de ne pas fermer les portes...</p>
+            <a href="detailsArtiste.php?id=<?= $artiste['uid'] ?>" class="card-link">
+                <article class="<?= $classe_carte ?>">
 
-          <div class="artist-schedule">
-            <h4>📅 Missions planifiées :</h4>
-            <ul>
-              <li>
-                <span class="schedule-time">14:30</span>
-                <span class="schedule-room">Salle Jupiter</span>
-                <span class="schedule-title">L'IA et vous</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </article>
-    </a>
+                    <div class="artist-photo">
+                        <div class="avatar-placeholder big" <?= $style_avatar ?>><?= htmlspecialchars($initiales) ?></div>
+                    </div>
 
-    <a href="detailsArtiste.php" class="card-link">
-      <article class="artist-card not-programmed">
-        <div class="artist-photo">
-          <div class="avatar-placeholder big" style="border-color: #94a3b8; color: #94a3b8;">JR</div>
-        </div>
-        <div class="artist-content">
-          <h3>Junior The Explorer</h3>
-          <span class="artist-role">Stagiaire de l'Espace</span>
-          <p class="artist-bio">Passionné par le HTML, il cherche encore sa voie lactée. En attente d'affectation.</p>
+                    <div class="artist-content">
+                        <h2><?= htmlspecialchars($artiste['nom_artiste'] ?: $artiste['prenom'].' '.$artiste['nom']) ?></h2>
+                        <p class="artist-role"><?= htmlspecialchars($artiste['role'] ?: 'Pilote Expert') ?></p>
+                        <p class="artist-bio"><?= htmlspecialchars($artiste['description']) ?></p>
 
-          <div class="no-schedule">
-            <em>🚫 Aucune mission planifiée pour le moment.</em>
-          </div>
-        </div>
-      </article>
-    </a>
+                        <?php if ($est_programme): ?>
+                            <div class="artist-schedule">
+                                <h3>📅 Missions planifiées :</h3>
+                                <ul>
+                                    <?php foreach ($missions as $mission):
+                                        $heure = substr($mission['heure_debut'], 0, 5);
+                                        ?>
+                                        <li>
+                                            <time class="schedule-time"><?= htmlspecialchars($heure) ?></time>
+                                            <span class="schedule-room"><?= htmlspecialchars($mission['nom_scene']) ?></span>
+                                            <span class="schedule-title"><?= htmlspecialchars($mission['intitule']) ?></span>
+                                        </li>
 
-  </div>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        <?php else: ?>
+                            <div class="no-schedule">
+                                <em>🚫 Aucune mission planifiée pour le moment.</em>
+                            </div>
+                        <?php endif; ?>
+
+                    </div>
+                </article>
+            </a>
+
+        <?php endforeach; ?>
+    </div>
 </main>
 <?php
 include 'header-footer/footer.php';

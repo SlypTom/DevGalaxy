@@ -49,7 +49,7 @@ include 'header-footer/header.php';
           </div>
           <div class="card-footer">
             <div class="status-indicator active">
-              <span>📅 10:30 - Salle Jupiter</span>
+              <time datetime="10:30">📅 10:30 - Salle Jupiter</time>
             </div>
           </div>
         </article>
@@ -69,7 +69,7 @@ include 'header-footer/header.php';
           </div>
           <div class="card-footer">
             <div class="status-indicator active">
-              <span>📅 16:00 - Salle Mars</span>
+              <time datetime="16:00">📅 16:00 - Salle Mars</time>
             </div>
           </div>
         </article>

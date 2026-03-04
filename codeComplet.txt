@@ -1,0 +1,2955 @@
+// db.php
+
+<?php
+// Configuration de la base de données
+$host = '192.168.132.203';
+$dbname = 'Q230181'; // ⚠️ REMPLACE par le nom exact de ta base dans PhpMyAdmin
+$username = 'Q230181';    // Par défaut sur XAMPP/WAMP. Sur MAMP (Mac), c'est souvent 'root' aussi.
+$password = '82e7573158686c566c29ce5bc9269fae5142f211';        // Par défaut vide sur XAMPP/WAMP. Sur MAMP, c'est souvent 'root'.
+
+try {
+    // Création de la connexion PDO
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
+
+    // Configuration pour afficher les erreurs SQL proprement
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Configuration pour récupérer les données sous forme de tableau associatif par défaut
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    // Si la connexion échoue, on arrête la page et on affiche l'erreur
+    die("Erreur de connexion à la base de données : " . $e->getMessage());
+}
+?>
+
+// style.css
+
+* {
+    margin: 0;
+}
+
+:root {
+    --bg-dark: #0a0e27;
+    --bg-card: rgba(30, 41, 59, 0.7);
+    --color-white: white;
+    --text-muted: #94a3b8;
+    --color-primary: #a855f7; /* Violet */
+    --color-secondary: #6366f1; /* Bleu-violet */
+    --color-accent: #67e8f9; /* Cyan */
+    --border-color: #475569;
+}
+
+body {
+    margin: 0 25px 25px 25px;
+    color: white;
+    background-image: url(../img/background.png);
+}
+
+.center {
+    text-align: center;
+}
+
+header {
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logoTitre {
+    display: flex;
+    align-items: center;
+    flex-basis: 25%;
+    padding-left: 25px;
+}
+
+.presentation {
+    padding: 0 300px 25px 300px;
+}
+
+h1 {
+    text-align: center;
+}
+
+img {
+    width: 30%;
+}
+
+ul {
+    display: flex;
+    gap: 150px;
+    justify-content: center;
+}
+
+li {
+    list-style-type: none;
+}
+
+a {
+    text-decoration: none;
+    color: var(--color-white);
+}
+
+footer {
+    text-align: center;
+}
+
+/* --- INDICATEUR DE PAGE ACTIVE --- */
+nav a.active {
+    color: var(--color-accent); /* Couleur cyan utilisée dans ton thème */
+    font-weight: bold;
+    border-bottom: 2px solid var(--color-primary); /* Petit soulignement violet */
+    padding-bottom: 5px; /* Espace entre le texte et le soulignement */
+}
+
+/* Optionnel : un effet au survol pour les autres liens */
+nav a:hover:not(.active) {
+    color: #a5b4fc;
+    transition: color 0.3s ease;
+}
+
+/* Elément pour construire le background */
+.space-background {
+    position: fixed; /* fixed pour qu'il reste en arrière-plan */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom right, var(--bg-dark), #141b3d, #0d1129);
+    overflow: hidden;
+    z-index: -1; /* Derrière tout le contenu */
+}
+
+.diagonal-lines {
+    position: absolute;
+    inset: 0;
+    opacity: 0.2;
+}
+
+.line-1 {
+    position: absolute;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, #64748b, transparent);
+    transform: rotate(12deg);
+    left: 75%;
+}
+
+.line-2 {
+    position: absolute;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, #64748b, transparent);
+    transform: rotate(-12deg);
+    left: 20%;
+}
+
+.star {
+    position: absolute;
+    background: var(--color-white);
+    border-radius: 50%;
+}
+
+.decorative {
+    position: absolute;
+}
+
+.plus {
+    position: relative;
+    opacity: 0.4;
+}
+
+.plus::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--text-muted);
+    transform: translateY(-50%);
+}
+
+.plus::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 100%;
+    background: var(--text-muted);
+    transform: translateX(-50%);
+}
+
+.cross {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+}
+
+.cross-square {
+    width: 8px;
+    height: 8px;
+    background: var(--color-secondary);
+    border-radius: 2px;
+}
+
+.square {
+    border-radius: 2px;
+    background: var(--color-secondary);
+    opacity: 0.6;
+}
+
+.circle {
+    border-radius: 50%;
+    background: #64748b;
+    opacity: 0.5;
+}
+
+.lines-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    opacity: 0.4;
+}
+
+.line-h {
+    height: 1px;
+    background: var(--text-muted);
+}
+
+.text-element {
+    color: var(--border-color);
+    opacity: 0.4;
+    letter-spacing: 0.1em;
+}
+
+/* --- SECTION PROGRAMME & TABLEAU --- */
+
+.programme-section {
+    padding: 50px 0;
+}
+
+.table-wrapper {
+    margin-top: 30px;
+    overflow-x: auto;
+    border-radius: 10px;
+    background: rgba(13, 17, 41, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.events-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #e2e8f0;
+    text-align: left;
+}
+
+/* En-têtes */
+.events-table th {
+    background-color: rgba(99, 102, 241, 0.2);
+    color: #a5b4fc;
+    padding: 20px;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    border-bottom: 2px solid rgba(99, 102, 241, 0.4);
+}
+
+/* Cellules */
+.events-table td {
+    padding: 20px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.events-table tr:last-child td {
+    border-bottom: none;
+}
+
+.events-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.time {
+    color: var(--color-accent);
+    font-weight: bold;
+    font-family: monospace;
+    font-size: 1.1rem;
+}
+
+.event-title {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    color: var(--color-white);
+}
+
+.event-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.badge-jupiter {
+    background-color: rgba(168, 85, 247, 0.2);
+    color: #d8b4fe;
+    border: 1px solid rgba(168, 85, 247, 0.5);
+}
+
+.badge-mars {
+    background-color: rgba(249, 115, 22, 0.2);
+    color: #fdba74;
+    border: 1px solid rgba(249, 115, 22, 0.5);
+}
+
+.badge-saturne {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+    border: 1px solid rgba(16, 185, 129, 0.5);
+}
+
+/* --- COMPOSANTS GLOBAUX : FORMULAIRES & BOUTONS --- */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--color-accent);
+    font-family: 'Orbitron', sans-serif, monospace; /* Ajout d'une police de secours */
+    font-size: 0.9rem;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 12px;
+    background-color: #1e293b;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    color: var(--color-white);
+    font-family: 'Roboto', sans-serif, sans-serif;
+    transition: 0.3s;
+    box-sizing: border-box; /* Évite que le padding fasse déborder l'input */
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+    color: var(--color-white);
+    border: none;
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+}
+
+/* --- SECTION CONTACT --- */
+.contact-section {
+    padding: 50px 25px;
+}
+
+.container-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+    background: rgba(13, 17, 41, 0.8);
+    padding: 40px;
+    border-radius: 15px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Colonne Gauche (Infos) */
+.contact-info {
+    flex: 1;
+    min-width: 300px;
+}
+
+.contact-info h1 {
+    text-align: left;
+    color: #a855f7;
+    margin-bottom: 20px;
+}
+
+.info-list {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.info-list li {
+    font-size: 1.1rem;
+    color: #e2e8f0;
+}
+
+/* Colonne Droite (Formulaire) */
+.contact-form-wrapper {
+    flex: 1.5;
+    min-width: 300px;
+}
+
+/* --- SECTION INSCRIPTION --- */
+.inscription-section {
+    padding: 50px 25px;
+}
+
+/* Formulaire */
+.inscription-form-wrapper {
+    flex: 1.5;
+    min-width: 300px;
+}
+
+.alert {
+    background-color: rgba(239, 68, 68, 0.2);
+    border: 1px solid #ef4444;
+    color: #fca5a5;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+/* --- PAGE ARTISTES --- */
+
+.page-artistes {
+    padding: 20px 0;
+}
+
+/* 1. Zone de Filtre */
+.filter-section {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 15px;
+    background: rgba(13, 17, 41, 0.6);
+    border-radius: 8px;
+    text-align: right;
+    border-bottom: 1px solid #334155;
+}
+
+.checkbox-container {
+    color: #a5b4fc;
+    cursor: pointer;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 2. La Grille */
+.artists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 3. La Carte Artiste */
+.artist-card {
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid #475569;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.artist-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(168, 85, 247, 0.3);
+    border-color: var(--color-primary);
+}
+
+/* Photo */
+.artist-photo {
+    height: 150px;
+    background: linear-gradient(to bottom, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 1));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 20px;
+}
+
+/* Avatar Rond */
+.avatar-placeholder.big {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid var(--color-primary);
+    background: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--color-white);
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+}
+
+/* Contenu */
+.artist-content {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.artist-content h2 {
+    margin: 0;
+    color: var(--color-white);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+}
+
+.artist-role {
+    color: var(--color-accent);
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    display: block;
+    font-weight: bold;
+}
+
+.artist-bio {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+/* 4. Section Planning */
+.artist-schedule {
+    background: rgba(15, 23, 42, 0.5);
+    padding: 10px;
+    border-radius: 6px;
+    border-left: 3px solid var(--color-primary);
+}
+
+.artist-schedule h3 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #a5b4fc;
+    margin-bottom: 8px;
+}
+
+.artist-schedule ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.artist-schedule li {
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 4px;
+}
+
+.schedule-time {
+    color: var(--color-accent);
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.schedule-room {
+    color: #cbd5e1;
+    font-style: italic;
+    font-size: 0.8rem;
+    margin-left: auto;
+    margin-right: 10px;
+}
+
+/* Style spécifique pour "Non Programmé" */
+.artist-card.not-programmed {
+    opacity: 0.7;
+    border-color: #334155;
+}
+
+.no-schedule {
+    color: #64748b;
+    font-size: 0.85rem;
+    padding: 10px;
+    text-align: center;
+    background: rgba(0,0,0,0.2);
+    border-radius: 6px;
+}
+
+/* --- TABLEAU DE BORD ARTISTE --- */
+.dashboard-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.dashboard-photo {
+    margin-bottom: 20px;
+    background: none;
+}
+
+.dashboard-avatar {
+    margin: 0 auto;
+}
+
+.dashboard-title {
+    color: var(--color-primary);
+    margin-bottom: 10px;
+}
+
+.dashboard-subtitle {
+    color: var(--text-muted);
+    margin-bottom: 30px;
+}
+
+.dashboard-schedule {
+    width: 100%;
+    max-width: 600px;
+    text-align: left;
+    background: rgba(15, 23, 42, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 0 auto;
+}
+
+.dashboard-schedule h2 {
+    font-size: 1.2rem;
+    color: var(--color-accent);
+    margin-bottom: 15px;
+}
+
+.dashboard-schedule-list {
+    list-style: none;
+    padding: 0;
+}
+
+.dashboard-schedule-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard-schedule-item:last-child {
+    border-bottom: none;
+}
+
+.mission-details strong {
+    color: #e2e8f0;
+    display: block;
+    font-size: 1.1rem;
+}
+
+.mission-details span {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.mission-time {
+    font-size: 1.2rem;
+    color: var(--color-accent);
+}
+
+.no-schedule-box {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.no-schedule-box p {
+    color: #cbd5e1;
+    margin: 0;
+}
+
+.dashboard-actions {
+    display: flex;
+    gap: 20px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Bouton secondaire (transparent avec bordure) */
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--color-primary);
+    color: white;
+}
+
+.btn-outline:hover {
+    background: rgba(168, 85, 247, 0.2);
+}
+
+/* --- PAGE PRESTATIONS --- */
+
+/* 1. Barre de Recherche Avancée */
+.search-section {
+    background: rgba(13, 17, 41, 0.8);
+    padding: 25px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    max-width: 1200px;
+    margin: 0 auto 40px auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.search-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.form-group-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.form-group-inline label {
+    font-size: 0.85rem;
+    color: #a5b4fc;
+    font-weight: bold;
+}
+
+/* Styles des Inputs et Selects */
+.search-form input[type="text"],
+.search-form select {
+    padding: 12px;
+    background-color: #0f172a;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    color: var(--color-white);
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.95rem;
+}
+
+.search-form input[type="text"]:focus,
+.search-form select:focus {
+    border-color: #06b6d4;
+    outline: none;
+}
+
+.checkbox-group {
+    flex: 0 0 auto;
+    justify-content: center;
+    padding-bottom: 12px;
+}
+
+/* Bouton Rechercher */
+.btn-search {
+    background: #06b6d4;
+    color: #0f172a;
+    border: none;
+    padding: 12px 25px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    height: 44px;
+}
+
+.btn-search:hover {
+    background: #22d3ee;
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+}
+
+/* 2. Grille Prestations */
+.prestations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* --- NOUVELLE STRATÉGIE DE POSITIONNEMENT --- */
+
+.prestation-card {
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none; /* Pour enlever le souligné du lien global */
+}
+
+/* On prépare le header pour accueillir le badge proprement */
+.card-header {
+    position: relative; /* Référence pour le badge */
+    width: 100%;
+}
+
+.category-badge {
+    /* On le force à rester en haut à droite du HEADER de la carte */
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 5;
+
+    padding: 4px 10px;
+    border-radius: 4px; /* Un peu plus carré pour mieux s'intégrer */
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* On s'assure que l'image/placeholder prend bien toute la place */
+.prestation-img-placeholder {
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.category-badge.backend { background: #7c3aed; }
+.category-badge.frontend { background: #ea580c; }
+.category-badge.security { background: #059669; }
+
+/* Corps de carte */
+.card-body {
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.card-body h2 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: var(--color-white);
+    font-family: 'Orbitron', sans-serif;
+}
+
+.card-body .author {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 15px;
+}
+
+.card-body .author strong {
+    color: #e2e8f0;
+}
+
+.card-body .description {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    line-height: 1.4;
+}
+
+/* Pied de carte */
+.card-footer {
+    padding: 15px 20px;
+    background: rgba(15, 23, 42, 0.6);
+    border-top: 1px solid #334155;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+/* Correction pour le statut en attente (évite le style inline) */
+.status-pending {
+    border-color: #94a3b8;
+}
+
+/* Style Programmé */
+.status-indicator.active {
+    color: var(--color-accent);
+}
+
+/* Style Catalogue */
+.status-indicator.inactive {
+    color: var(--text-muted); /* Gris */
+    font-style: italic;
+    font-weight: normal;
+}
+
+/* Correction des liens sur les cartes */
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+/* Optionnel : garde l'effet de hover sur la carte même avec le lien */
+.card-link:hover .prestation-card {
+    transform: translateY(-5px);
+    border-color: #6366f1;
+}
+
+/* --- CATALOGUE PUBLIC DES PRESTATIONS --- */
+.catalog-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.catalog-title {
+    color: var(--color-primary);
+    margin-bottom: 10px;
+}
+
+.filter-section {
+    background: rgba(15, 23, 42, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 40px;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+}
+
+.filter-group {
+    width: 100% !important;
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group label {
+    font-size: 0.85rem;
+    color: #a5b4fc;
+    font-weight: bold;
+}
+
+.filter-group input[type="text"],
+.filter-group select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+}
+
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-muted);
+    min-width: 250px;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.prestation-meta {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+}
+
+.meta-artist {
+    color: var(--color-accent);
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.meta-schedule {
+    color: #10b981; /* Vert pour indiquer que c'est programmé */
+    display: block;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 15px;
+    padding-top: 15px;
+}
+
+.meta-not-scheduled {
+    color: var(--text-muted);
+    font-style: italic;
+    display: block;
+}
+
+.no-results {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 40px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+/* --- GESTION DES PRESTATIONS --- */
+.back-link {
+    color: var(--color-accent);
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.alert-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.alert-error {
+    background-color: rgba(239, 68, 68, 0.2);
+    border: 1px solid #ef4444;
+    color: #fca5a5;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.alert-error ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.alert-success {
+    background-color: rgba(16, 185, 129, 0.2);
+    border: 1px solid #10b981;
+    color: #6ee7b7;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.prestations-wrapper {
+    margin-bottom: 60px;
+}
+
+.catalog-empty {
+    width: 100%;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.card-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-small {
+    padding: 8px 15px;
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+.btn-danger {
+    background: #ef4444;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+}
+
+.form-container {
+    max-width: 800px;
+    margin: 0 auto 50px auto;
+}
+
+.form-title {
+    color: var(--color-primary);
+    margin-bottom: 20px;
+}
+
+/* Couleurs par défaut pour les images placeholders du catalogue */
+.bg-gradient-catalog {
+    background: linear-gradient(45deg, #1e1b4b, #312e81);
+}
+
+/* --- COULEURS DYNAMIQUES DES CATÉGORIES --- */
+
+/* 1. Catégorie : Backend & Sécurité (Rouge/Orange) */
+.badge-cat-1 {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border: 1px solid #ef4444;
+}
+.bg-cat-1 {
+    background: linear-gradient(45deg, #7f1d1d, #b91c1c);
+}
+
+/* 2. Catégorie : Frontend & Design (Bleu) */
+.badge-cat-2 {
+    background-color: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+    border: 1px solid #3b82f6;
+}
+.bg-cat-2 {
+    background: linear-gradient(45deg, #1e3a8a, #1d4ed8);
+}
+
+/* 3. Catégorie : Intelligence Artificielle (Vert) */
+.badge-cat-3 {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+    border: 1px solid #10b981;
+}
+.bg-cat-3 {
+    background: linear-gradient(45deg, #064e3b, #047857);
+}
+
+/* 4. Catégorie : Événement Général (Violet) */
+.badge-cat-4 {
+    background-color: rgba(168, 85, 247, 0.2);
+    color: #d8b4fe;
+    border: 1px solid #a855f7;
+}
+.bg-cat-4 {
+    background: linear-gradient(45deg, #4c1d95, #7e22ce);
+}
+
+/* Catégorie par défaut (Gris, au cas où tu en ajoutes des nouvelles plus tard) */
+.badge-cat-default {
+    background-color: rgba(148, 163, 184, 0.2);
+    color: #cbd5e1;
+    border: 1px solid #94a3b8;
+}
+.bg-cat-default {
+    background: linear-gradient(45deg, #1e1b4b, #312e81);
+}
+
+/* --- FICHE DÉTAILLÉE PRESTATION --- */
+.details-container {
+    max-width: 900px;
+    margin: 40px auto;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 40px;
+    background: rgba(15, 23, 42, 0.6);
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.details-image-side {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* --- STRUCTURE DU CONTENEUR D'IMAGE --- */
+.details-img-wrapper {
+    position: relative; /* Référence pour le badge */
+    width: 100%;
+}
+
+.details-img-big {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.details-img-big code {
+    font-size: 3rem;
+    color: white;
+    text-transform: uppercase;
+}
+
+.details-info-side {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.details-title {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    margin: 0;
+}
+
+/* --- LE BADGE DANS LA PAGE DÉTAILS --- */
+.details-category {
+    position: absolute; /* Se place par rapport à .details-img-wrapper */
+    top: 15px;
+    right: 15px;
+    margin: 0; /* On annule les marges auto si présentes */
+    z-index: 10;
+}
+
+.details-description {
+    line-height: 1.8;
+    color: #cbd5e1;
+    font-size: 1.1rem;
+}
+
+.details-meta-box {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid var(--color-accent);
+}
+
+.details-meta-box h4 {
+    margin-top: 0;
+    color: var(--color-accent);
+    margin-bottom: 10px;
+}
+
+.link-pilot {
+    color: var(--color-accent);
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+/* Responsive pour mobile */
+@media (max-width: 768px) {
+    .details-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- PAGE DÉTAIL ARTISTE --- */
+
+.btn-back {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: var(--text-muted);
+    text-decoration: underline;
+}
+
+.artist-profile-full {
+    background: rgba(13, 17, 41, 0.8);
+    border: 1px solid #334155;
+    border-radius: 15px;
+    padding: 40px;
+    max-width: 1000px;
+    margin: 0 auto 50px auto;
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+}
+
+.profile-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Avatar Géant */
+.avatar-placeholder.big-profile {
+    width: 200px;
+    height: 200px;
+    font-size: 3rem;
+    border: 4px solid var(--color-primary);
+    box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+    border-radius: 50%;
+    background: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+}
+
+.profile-info {
+    flex: 1;
+    min-width: 300px;
+}
+
+.profile-info h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.5rem;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.bio-full {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.profile-stats {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+    color: var(--color-accent);
+}
+
+/* --- ÉDITION DU PROFIL --- */
+.profile-edit-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.profile-edit-title {
+    color: var(--color-primary);
+    margin-bottom: 10px;
+}
+
+.profile-edit-subtitle {
+    color: var(--text-muted);
+}
+
+.password-section-title {
+    color: var(--color-accent);
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+}
+
+.helper-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+    display: block;
+}
+
+/* =========================================
+   VERSION MOBILE (RESPONSIVE)
+   ======================================================= */
+
+@media screen and (max-width: 768px) {
+
+    /* --- 1. GLOBAL & MARGES --- */
+    body {
+        margin: 0 !important;
+        padding: 10px;
+    }
+
+    .center, .presentation, .page-artistes {
+        padding: 10px !important;
+        width: 100% !important;
+    }
+
+    /* --- 2. HEADER & MENU --- */
+    header {
+        flex-direction: column !important;
+        height: auto !important;
+        padding: 20px 10px;
+        gap: 20px;
+    }
+
+    .logoTitre {
+        width: 100%;
+        justify-content: center;
+        padding-left: 0 !important;
+        margin-bottom: 10px;
+    }
+
+    .logoTitre img {
+        width: 50px;
+    }
+
+    nav {
+        width: 100%;
+    }
+
+    nav ul {
+        flex-direction: column !important;
+        gap: 15px !important;
+        padding: 0;
+        align-items: center;
+    }
+
+    nav li {
+        width: 100%;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 8px;
+    }
+
+    .btn-inscription {
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+        display: block;
+    }
+
+    /* 3. GRILLES MONO-COLONNE */
+    /* Force 1 seule colonne pour Artistes et Prestations */
+    .artists-grid,
+    .prestations-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 20px;
+        padding: 0;
+    }
+
+    .artist-card,
+    .prestation-card {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* --- 4. FORMULAIRES & CONTACT --- */
+    .container-contact {
+        flex-direction: column !important;
+        padding: 20px !important;
+    }
+
+    .search-form {
+        flex-direction: column !important;
+    }
+
+    .form-group-inline {
+        width: 100% !important;
+    }
+
+    /* --- 5. TABLEAU (Scroll horizontal pour éviter de casser le site) --- */
+    .table-wrapper {
+        display: block !important;
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .events-table {
+        min-width: 600px;
+    }
+}
+
+// footer.php
+
+<footer>© 2026 DevGalaxy</footer>
+</body>
+</html>
+
+header.php
+
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+// On récupère le nom du fichier en cours de lecture
+$current_page = basename($_SERVER['PHP_SELF']);
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>DevGalaxy</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<header>
+    <div class="space-background">
+        <!-- Diagonal lines -->
+        <div class="diagonal-lines">
+            <div class="line-1"></div>
+            <div class="line-2"></div>
+        </div>
+
+        <!-- Stars (80 stars with random positions) -->
+        <div class="star" style="left: 23%; top: 12%; width: 2px; height: 2px; opacity: 0.8;"></div>
+        <div class="star" style="left: 67%; top: 5%; width: 1.5px; height: 1.5px; opacity: 0.6;"></div>
+        <div class="star" style="left: 45%; top: 89%; width: 2.5px; height: 2.5px; opacity: 0.9;"></div>
+        <div class="star" style="left: 82%; top: 23%; width: 1px; height: 1px; opacity: 0.5;"></div>
+        <div class="star" style="left: 8%; top: 56%; width: 2px; height: 2px; opacity: 0.7;"></div>
+        <div class="star" style="left: 91%; top: 78%; width: 1.5px; height: 1.5px; opacity: 0.8;"></div>
+        <div class="star" style="left: 34%; top: 34%; width: 2px; height: 2px; opacity: 0.6;"></div>
+        <div class="star" style="left: 56%; top: 67%; width: 1px; height: 1px; opacity: 0.9;"></div>
+        <div class="star" style="left: 12%; top: 90%; width: 2.5px; height: 2.5px; opacity: 0.7;"></div>
+        <div class="star" style="left: 78%; top: 45%; width: 2px; height: 2px; opacity: 0.5;"></div>
+        <div class="star" style="left: 43%; top: 21%; width: 1.5px; height: 1.5px; opacity: 0.8;"></div>
+        <div class="star" style="left: 65%; top: 82%; width: 2px; height: 2px; opacity: 0.6;"></div>
+        <div class="star" style="left: 29%; top: 58%; width: 1px; height: 1px; opacity: 0.9;"></div>
+        <div class="star" style="left: 87%; top: 14%; width: 2.5px; height: 2.5px; opacity: 0.7;"></div>
+        <div class="star" style="left: 5%; top: 73%; width: 2px; height: 2px; opacity: 0.5;"></div>
+        <div class="star" style="left: 52%; top: 38%; width: 1.5px; height: 1.5px; opacity: 0.8;"></div>
+        <div class="star" style="left: 71%; top: 91%; width: 2px; height: 2px; opacity: 0.6;"></div>
+        <div class="star" style="left: 19%; top: 27%; width: 1px; height: 1px; opacity: 0.9;"></div>
+        <div class="star" style="left: 94%; top: 52%; width: 2.5px; height: 2.5px; opacity: 0.7;"></div>
+        <div class="star" style="left: 37%; top: 8%; width: 2px; height: 2px; opacity: 0.5;"></div>
+        <div class="star" style="left: 61%; top: 64%; width: 1.5px; height: 1.5px; opacity: 0.8;"></div>
+        <div class="star" style="left: 25%; top: 48%; width: 2px; height: 2px; opacity: 0.6;"></div>
+        <div class="star" style="left: 83%; top: 31%; width: 1px; height: 1px; opacity: 0.9;"></div>
+        <div class="star" style="left: 48%; top: 76%; width: 2.5px; height: 2.5px; opacity: 0.7;"></div>
+        <div class="star" style="left: 7%; top: 19%; width: 2px; height: 2px; opacity: 0.5;"></div>
+        <div class="star" style="left: 73%; top: 55%; width: 1.5px; height: 1.5px; opacity: 0.8;"></div>
+        <div class="star" style="left: 32%; top: 93%; width: 2px; height: 2px; opacity: 0.6;"></div>
+        <div class="star" style="left: 88%; top: 42%; width: 1px; height: 1px; opacity: 0.9;"></div>
+        <div class="star" style="left: 54%; top: 11%; width: 2.5px; height: 2.5px; opacity: 0.7;"></div>
+        <div class="star" style="left: 16%; top: 69%; width: 2px; height: 2px; opacity: 0.5;"></div>
+        <div class="star" style="left: 76%; top: 26%; width: 1.5px; height: 1.5px; opacity: 0.8;"></div>
+        <div class="star" style="left: 41%; top: 84%; width: 2px; height: 2px; opacity: 0.6;"></div>
+        <div class="star" style="left: 63%; top: 37%; width: 1px; height: 1px; opacity: 0.9;"></div>
+        <div class="star" style="left: 22%; top: 61%; width: 2.5px; height: 2.5px; opacity: 0.7;"></div>
+        <div class="star" style="left: 85%; top: 7%; width: 2px; height: 2px; opacity: 0.5;"></div>
+        <div class="star" style="left: 49%; top: 50%; width: 1.5px; height: 1.5px; opacity: 0.8;"></div>
+        <div class="star" style="left: 11%; top: 88%; width: 2px; height: 2px; opacity: 0.6;"></div>
+        <div class="star" style="left: 69%; top: 33%; width: 1px; height: 1px; opacity: 0.9;"></div>
+        <div class="star" style="left: 35%; top: 72%; width: 2.5px; height: 2.5px; opacity: 0.7;"></div>
+        <div class="star" style="left: 92%; top: 17%; width: 2px; height: 2px; opacity: 0.5;"></div>
+        <div class="star" style="left: 58%; top: 59%; width: 1.5px; height: 1.5px; opacity: 0.8;"></div>
+        <div class="star" style="left: 27%; top: 95%; width: 2px; height: 2px; opacity: 0.6;"></div>
+        <div class="star" style="left: 80%; top: 44%; width: 1px; height: 1px; opacity: 0.9;"></div>
+        <div class="star" style="left: 44%; top: 15%; width: 2.5px; height: 2.5px; opacity: 0.7;"></div>
+        <div class="star" style="left: 9%; top: 66%; width: 2px; height: 2px; opacity: 0.5;"></div>
+        <div class="star" style="left: 66%; top: 29%; width: 1.5px; height: 1.5px; opacity: 0.8;"></div>
+        <div class="star" style="left: 31%; top: 81%; width: 2px; height: 2px; opacity: 0.6;"></div>
+        <div class="star" style="left: 89%; top: 36%; width: 1px; height: 1px; opacity: 0.9;"></div>
+        <div class="star" style="left: 53%; top: 70%; width: 2.5px; height: 2.5px; opacity: 0.7;"></div>
+        <div class="star" style="left: 17%; top: 24%; width: 2px; height: 2px; opacity: 0.5;"></div>
+        <div class="star" style="left: 74%; top: 57%; width: 1.5px; height: 1.5px; opacity: 0.8;"></div>
+        <div class="star" style="left: 38%; top: 92%; width: 2px; height: 2px; opacity: 0.6;"></div>
+        <div class="star" style="left: 96%; top: 41%; width: 1px; height: 1px; opacity: 0.9;"></div>
+        <div class="star" style="left: 51%; top: 9%; width: 2.5px; height: 2.5px; opacity: 0.7;"></div>
+        <div class="star" style="left: 14%; top: 63%; width: 2px; height: 2px; opacity: 0.5;"></div>
+        <div class="star" style="left: 77%; top: 20%; width: 1.5px; height: 1.5px; opacity: 0.8;"></div>
+        <div class="star" style="left: 40%; top: 77%; width: 2px; height: 2px; opacity: 0.6;"></div>
+        <div class="star" style="left: 62%; top: 32%; width: 1px; height: 1px; opacity: 0.9;"></div>
+        <div class="star" style="left: 26%; top: 54%; width: 2.5px; height: 2.5px; opacity: 0.7;"></div>
+        <div class="star" style="left: 84%; top: 10%; width: 2px; height: 2px; opacity: 0.5;"></div>
+        <div class="star" style="left: 46%; top: 68%; width: 1.5px; height: 1.5px; opacity: 0.8;"></div>
+        <div class="star" style="left: 13%; top: 85%; width: 2px; height: 2px; opacity: 0.6;"></div>
+        <div class="star" style="left: 70%; top: 39%; width: 1px; height: 1px; opacity: 0.9;"></div>
+        <div class="star" style="left: 33%; top: 75%; width: 2.5px; height: 2.5px; opacity: 0.7;"></div>
+        <div class="star" style="left: 90%; top: 16%; width: 2px; height: 2px; opacity: 0.5;"></div>
+        <div class="star" style="left: 55%; top: 62%; width: 1.5px; height: 1.5px; opacity: 0.8;"></div>
+        <div class="star" style="left: 20%; top: 97%; width: 2px; height: 2px; opacity: 0.6;"></div>
+        <div class="star" style="left: 79%; top: 47%; width: 1px; height: 1px; opacity: 0.9;"></div>
+        <div class="star" style="left: 42%; top: 13%; width: 2.5px; height: 2.5px; opacity: 0.7;"></div>
+        <div class="star" style="left: 6%; top: 71%; width: 2px; height: 2px; opacity: 0.5;"></div>
+        <div class="star" style="left: 64%; top: 28%; width: 1.5px; height: 1.5px; opacity: 0.8;"></div>
+        <div class="star" style="left: 30%; top: 86%; width: 2px; height: 2px; opacity: 0.6;"></div>
+        <div class="star" style="left: 86%; top: 35%; width: 1px; height: 1px; opacity: 0.9;"></div>
+        <div class="star" style="left: 50%; top: 74%; width: 2.5px; height: 2.5px; opacity: 0.7;"></div>
+        <div class="star" style="left: 15%; top: 22%; width: 2px; height: 2px; opacity: 0.5;"></div>
+        <div class="star" style="left: 72%; top: 60%; width: 1.5px; height: 1.5px; opacity: 0.8;"></div>
+        <div class="star" style="left: 36%; top: 94%; width: 2px; height: 2px; opacity: 0.6;"></div>
+        <div class="star" style="left: 93%; top: 43%; width: 1px; height: 1px; opacity: 0.9;"></div>
+
+        <!-- Plus signs -->
+        <div class="decorative plus" style="left: 12%; top: 15%; width: 20px; height: 20px;"></div>
+        <div class="decorative plus" style="left: 18%; top: 45%; width: 16px; height: 16px;"></div>
+        <div class="decorative plus" style="left: 88%; top: 65%; width: 20px; height: 20px;"></div>
+
+        <!-- Cross (4 squares) -->
+        <div class="decorative cross" style="left: 10%; top: 10%; width: 24px; height: 24px;">
+            <div class="cross-square"></div>
+            <div class="cross-square"></div>
+            <div class="cross-square"></div>
+            <div class="cross-square"></div>
+        </div>
+
+        <!-- Squares -->
+        <div class="decorative square" style="left: 15%; top: 30%; width: 12px; height: 12px;"></div>
+        <div class="decorative square" style="left: 60%; top: 70%; width: 12px; height: 12px;"></div>
+        <div class="decorative square" style="left: 95%; top: 88%; width: 8px; height: 8px;"></div>
+
+        <!-- Circles -->
+        <div class="decorative circle" style="left: 14%; top: 45%; width: 6px; height: 6px;"></div>
+        <div class="decorative circle" style="left: 95%; top: 35%; width: 8px; height: 8px;"></div>
+
+        <!-- Lines groups -->
+        <div class="decorative lines-group" style="left: 28%; top: 15%;">
+            <div class="line-h" style="width: 32px;"></div>
+            <div class="line-h" style="width: 24px;"></div>
+            <div class="line-h" style="width: 32px;"></div>
+        </div>
+        <div class="decorative lines-group" style="left: 70%; top: 68%;">
+            <div class="line-h" style="width: 32px;"></div>
+            <div class="line-h" style="width: 24px;"></div>
+            <div class="line-h" style="width: 32px;"></div>
+        </div>
+
+        <!-- Text -->
+        <div class="decorative text-element" style="left: 3%; top: 35%;">5 9</div>
+    </div>
+    <div class="logoTitre">
+        <img src="img/logo.png" alt="Logo officiel de la convention DevGalaxy">
+        <h2>Dev Galaxy</h2>
+    </div>
+    <nav aria-label="Menu principal">
+        <ul>
+            <li>
+                <a href="index.php" class="<?php echo ($current_page == 'index.php') ? 'active' : ''; ?>">Accueil</a>
+            </li>
+            <li>
+                <a href="artistes.php" class="<?php echo ($current_page == 'artistes.php') ? 'active' : ''; ?>">Artistes</a>
+            </li>
+            <li>
+                <a href="prestations.php" class="<?php echo ($current_page == 'prestations.php') ? 'active' : ''; ?>">Prestations</a>
+            </li>
+            <li>
+                <a href="contact.php" class="<?php echo ($current_page == 'contact.php') ? 'active' : ''; ?>">Contact</a>
+            </li>
+            <?php if (isset($_SESSION['user_id'])): // SI L'UTILISATEUR EST CONNECTÉ ?>
+                <li><a href="dashboard.php" class="<?= ($current_page == 'dashboard.php') ? 'active' : '' ?>">Mon Espace</a></li>
+                <li><a href="deconnexion.php" class="btn-inscription">Déconnexion</a></li>
+            <?php else: // SI L'UTILISATEUR N'EST PAS CONNECTÉ ?>
+                <li><a href="connexion.php" class="<?= ($current_page == 'connexion.php') ? 'active' : '' ?>">Connexion</a></li>
+                <li><a href="inscription.php" class="btn-inscription <?= ($current_page == 'inscription.php') ? 'active' : '' ?>">Inscription</a></li>
+            <?php endif; ?>
+        </ul>
+    </nav>
+</header>
+
+//artistes.php
+
+<?php
+require_once 'config/db.php';
+
+include 'header-footer/header.php';
+?>
+<main class="page-artistes">
+
+  <div class="center">
+    <h1>Nos Pilotes Experts</h1>
+    <p>Découvrez les esprits brillants qui vont vous guider à travers la galaxie du code.</p>
+  </div>
+
+  <div class="filter-section">
+    <label class="checkbox-container">
+      <input type="checkbox" id="filter-programmed">
+      <span class="checkmark"></span>
+      Afficher uniquement les pilotes programmés
+    </label>
+  </div>
+    <div class="artists-grid">
+        <?php
+        // 1. On récupère tous les artistes (ceux qui ne sont pas organisateurs).
+        $sql_artistes = "SELECT * FROM web2026_Utilisateur WHERE est_organisateur = 0";
+        $stmt_artistes = $pdo->query($sql_artistes);
+        $artistes = $stmt_artistes->fetchAll();
+
+        foreach ($artistes as $artiste):
+            // Création des initiales
+            $initiales = strtoupper(substr($artiste['prenom'], 0, 1) . substr($artiste['nom'], 0, 1));
+
+            // 2. On cherche les missions planifiées POUR CET ARTISTE UNIQUEMENT
+            $sql_missions = "
+            SELECT p.heure_debut, s.nom_scene, pr.intitule
+            FROM web2026_Programmation p
+            JOIN web2026_Prestation pr ON p.prestation_id = pr.pid
+            JOIN web2026_Scene s ON p.scene_id = s.sid
+            WHERE pr.artiste_id = :artiste_id
+            ORDER BY p.heure_debut ASC
+        ";
+            // On utilise prepare() car on injecte une variable (artiste_id) en toute sécurité
+            $stmt_missions = $pdo->prepare($sql_missions);
+            $stmt_missions->execute(['artiste_id' => $artiste['uid']]);
+            $missions = $stmt_missions->fetchAll();
+
+            // 3. L'artiste est-il programmé ? (A-t-il au moins une mission ?)
+            $est_programme = (count($missions) > 0);
+
+            // On définit la classe de la carte (transparente s'il n'est pas programmé).
+            $classe_carte = $est_programme ? "artist-card" : "artist-card not-programmed";
+
+            // 4. Gestion de la couleur de l'avatar (Le cercle)
+            $style_avatar = "";
+            if (!$est_programme) {
+                // Gris s'il n'a pas de mission
+                $style_avatar = 'style="border-color: #94a3b8; color: #94a3b8;"';
+            } else {
+                // Couleur basée sur sa première salle
+                $premiere_salle = strtolower($missions[0]['nom_scene']);
+                if (strpos($premiere_salle, 'mars') !== false) {
+                    $style_avatar = 'style="border-color: #f97316;"'; // Orange Mars
+                } elseif (strpos($premiere_salle, 'saturne') !== false) {
+                    $style_avatar = 'style="border-color: #10b981;"'; // Vert Saturne
+                } else {
+                    $style_avatar = 'style="border-color: #a855f7;"'; // Violet Jupiter par défaut
+                }
+            }
+            ?>
+
+            <a href="detailsArtiste.php?id=<?= $artiste['uid'] ?>" class="card-link">
+                <article class="<?= $classe_carte ?>">
+
+                    <div class="artist-photo">
+                        <div class="avatar-placeholder big" <?= $style_avatar ?>><?= htmlspecialchars($initiales) ?></div>
+                    </div>
+
+                    <div class="artist-content">
+                        <h2><?= htmlspecialchars($artiste['nom_artiste'] ?: $artiste['prenom'].' '.$artiste['nom']) ?></h2>
+                        <p class="artist-role"><?= htmlspecialchars($artiste['role'] ?: 'Pilote Expert') ?></p>
+                        <p class="artist-bio"><?= htmlspecialchars($artiste['description']) ?></p>
+
+                        <?php if ($est_programme): ?>
+                            <div class="artist-schedule">
+                                <h3>📅 Missions planifiées :</h3>
+                                <ul>
+                                    <?php foreach ($missions as $mission):
+                                        $heure = substr($mission['heure_debut'], 0, 5);
+                                        ?>
+                                        <li>
+                                            <time class="schedule-time"><?= htmlspecialchars($heure) ?></time>
+                                            <span class="schedule-room"><?= htmlspecialchars($mission['nom_scene']) ?></span>
+                                            <span class="schedule-title"><?= htmlspecialchars($mission['intitule']) ?></span>
+                                        </li>
+
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        <?php else: ?>
+                            <div class="no-schedule">
+                                <em>🚫 Aucune mission planifiée pour le moment.</em>
+                            </div>
+                        <?php endif; ?>
+
+                    </div>
+                </article>
+            </a>
+
+        <?php endforeach; ?>
+    </div>
+</main>
+<?php
+include 'header-footer/footer.php';
+?>
+
+// connexion.php
+
+<?php
+// 1. On démarre la session (toujours en tout premier !)
+session_start();
+
+// Si l'utilisateur est déjà connecté, on le renvoie vers l'accueil (ou son tableau de bord)
+if (isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit;
+}
+
+// 2. On se connecte à la base de données
+require_once 'config/db.php';
+
+$email = '';
+$erreurs = [];
+
+// 3. Traitement du formulaire quand l'utilisateur clique sur "Connexion"
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    // Récupération des données
+    $email = trim($_POST['email']);
+    $mdp = $_POST['mdp'];
+
+    // Vérification que les champs ne sont pas vides
+    if (empty($email) || empty($mdp)) {
+        $erreurs[] = "Veuillez remplir tous les champs."; // [cite: 325]
+    }
+
+    if (empty($erreurs)) {
+        // On cherche l'utilisateur dans la base de données par son email
+        $stmt = $pdo->prepare("SELECT * FROM web2026_Utilisateur WHERE email = :email");
+        $stmt->execute(['email' => $email]);
+        $utilisateur = $stmt->fetch();
+
+        // Si l'utilisateur existe ET que le mot de passe correspond
+        // password_verify compare le mot de passe tapé en clair avec le mot de passe haché de la BDD
+        if ($utilisateur && password_verify($mdp, $utilisateur['mot_passe_hashe'])) { //
+
+            // On stocke les infos importantes dans la session
+            $_SESSION['user_id'] = $utilisateur['uid'];
+            $_SESSION['est_organisateur'] = $utilisateur['est_organisateur']; // [cite: 322]
+
+            // Redirection vers le tableau de bord (ou accueil pour l'instant)
+            header("Location: index.php?connexion=succes"); // [cite: 322]
+            exit;
+
+        } else {
+            // Message d'erreur générique par sécurité (on ne dit pas si c'est l'email ou le mdp qui est faux)
+            $erreurs[] = "L'adresse e-mail ou le mot de passe est incorrect."; // [cite: 328, 329]
+        }
+    }
+}
+
+// Seulement après le traitement, on inclut le header
+include 'header-footer/header.php';
+?>
+
+    <main class="inscription-section">
+        <div class="container-contact">
+
+            <div class="inscription-form-wrapper">
+                <form action="connexion.php" method="post" class="space-form" aria-label="Formulaire de connexion">
+                    <fieldset style="border: none; padding: 0; margin: 0;">
+                        <legend style="position: absolute; width: 1px; height: 1px; overflow: hidden;">Connectez-vous à votre espace personnel</legend>
+
+                        <h1 style="text-align: left; color: #a855f7; margin-bottom: 20px;">Connexion au Vaisseau</h1>
+
+                        <?php if (!empty($erreurs)): ?>
+                            <div class="alert">
+                                <ul>
+                                    <?php foreach ($erreurs as $erreur): ?>
+                                        <li><?= htmlspecialchars($erreur) ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
+
+                        <div class="form-group">
+                            <label for="email">Email de liaison *</label>
+                            <input type="email" id="email" name="email" placeholder="nom@domaine.com" value="<?= htmlspecialchars($email) ?>" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="mdp">Mot de passe *</label>
+                            <input type="password" id="mdp" name="mdp" placeholder="********" required>
+                        </div>
+
+                        <div style="margin-bottom: 20px; text-align: right;">
+                            <a href="motDePasseOublie.php" style="color: #67e8f9; font-size: 0.85rem; text-decoration: underline;">Mot de passe oublié ?</a>
+                        </div>
+
+                        <button type="submit" class="btn-primary">S'authentifier 🚀</button>
+                    </fieldset>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+<?php
+include 'header-footer/footer.php';
+?>
+
+// contact.php
+
+<?php
+include 'header-footer/header.php';
+?>
+<main>
+    <section class="contact-section">
+        <div class="container-contact">
+
+            <div class="contact-info">
+                <h1 >Base de transmission</h1>
+                <p>Une question sur l'événement ? Canal ouvert 24/7.</p>
+
+                <ul class="info-list">
+                    <li>📍 <strong>QG :</strong> Space Center, Salle Jupiter</li>
+                    <li>📧 <strong>Signal :</strong> contact@devgalaxy.com</li>
+                    <li>📡 <strong>Fréquence :</strong> +32 400 00 00 00</li>
+                    <li><strong>* :</strong> champs obligatoires</li>
+                </ul>
+            </div>
+
+            <div class="contact-form-wrapper">
+                <form action="#" method="post" class="space-form">
+                    <fieldset style="border: none; padding: 0; margin: 0;">
+                        <legend style="position: absolute; width: 1px; height: 1px; overflow: hidden;">Envoyez un message à l'équipe DevGalaxy</legend>
+
+                        <div class="form-group">
+                            <label for="nom">Nom de code *</label>
+                            <input type="text" id="nom" name="nom" placeholder="Ex: Commander Shepard" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email de liaison *</label>
+                            <input type="email" id="email" name="email" placeholder="nom@domaine.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sujet">Sujet *</label>
+                            <input type="text" id="sujet" name="sujet" placeholder="Sujet" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Transmission *</label>
+                            <textarea id="message" name="message" rows="5" placeholder="Votre message..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Envoyer le signal 🚀</button>
+                    </fieldset>
+                </form>
+            </div>
+
+        </div>
+    </section>
+</main>
+<?php
+include 'header-footer/footer.php';
+?>
+
+// dashboard.php
+
+<?php
+// 1. SÉCURITÉ : On vérifie que l'utilisateur est bien connecté
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: connexion.php");
+    exit;
+}
+
+// 2. Connexion à la base de données
+require_once 'config/db.php';
+
+// 3. Récupération des informations de l'utilisateur connecté
+$user_id = $_SESSION['user_id'];
+$stmt_user = $pdo->prepare("SELECT * FROM web2026_Utilisateur WHERE uid = :uid");
+$stmt_user->execute(['uid' => $user_id]);
+$user = $stmt_user->fetch();
+
+$nom_affichage = !empty($user['nom_artiste']) ? $user['nom_artiste'] : $user['prenom'];
+$initiales = strtoupper(substr($user['prenom'], 0, 1) . substr($user['nom'], 0, 1));
+
+// 4. Récupération de sa programmation personnelle
+$sql_planning = "
+    SELECT p.heure_debut, pr.intitule, s.nom_scene
+    FROM web2026_Programmation p
+    JOIN web2026_Prestation pr ON p.prestation_id = pr.pid
+    JOIN web2026_Scene s ON p.scene_id = s.sid
+    WHERE pr.artiste_id = :uid
+    ORDER BY p.heure_debut ASC
+";
+$stmt_planning = $pdo->prepare($sql_planning);
+$stmt_planning->execute(['uid' => $user_id]);
+$planning = $stmt_planning->fetchAll();
+
+include 'header-footer/header.php';
+?>
+
+    <main class="inscription-section">
+        <div class="container-contact dashboard-container">
+
+            <div class="artist-photo dashboard-photo">
+                <div class="avatar-placeholder big-profile dashboard-avatar"><?= htmlspecialchars($initiales) ?></div>
+            </div>
+
+            <h1 class="dashboard-title">Bienvenue à bord, <?= htmlspecialchars($nom_affichage) ?> !</h1>
+            <p class="dashboard-subtitle">Ceci est votre tableau de bord personnel.</p>
+
+            <div class="artist-schedule dashboard-schedule">
+                <h2>📅 Votre Planning Officiel</h2>
+
+                <?php if (count($planning) > 0): ?>
+                    <ul class="dashboard-schedule-list">
+                        <?php foreach ($planning as $mission):
+                            $heure = substr($mission['heure_debut'], 0, 5);
+                            ?>
+                            <li class="dashboard-schedule-item">
+                                <div class="mission-details">
+                                    <strong><?= htmlspecialchars($mission['intitule']) ?></strong>
+                                    <span>📍 <?= htmlspecialchars($mission['nom_scene']) ?></span>
+                                </div>
+                                <span class="time mission-time"><?= htmlspecialchars($heure) ?></span>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    <div class="no-schedule-box">
+                        <p>Vous n'êtes pas encore dans le programme officiel. L'organisateur met le planning à jour régulièrement !</p>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <div class="dashboard-actions">
+                <a href="gererPrestations.php" class="btn-primary">Gérer mon catalogue</a>
+                <a href="editerProfil.php" class="btn-primary btn-outline">Éditer mon profil</a>
+            </div>
+
+        </div>
+    </main>
+
+<?php
+include 'header-footer/footer.php';
+?>
+
+// deconnexion.php
+
+<?php
+// 1. On récupère la session en cours
+session_start();
+
+// 2. On vide toutes les variables de la session
+$_SESSION = array();
+
+// 3. On détruit complètement la session côté serveur
+session_destroy();
+
+// 4. On redirige l'utilisateur vers la page d'accueil en tant que simple visiteur
+header("Location: index.php");
+exit;
+?>
+
+
+// detailsArtiste.php
+
+<?php
+include 'header-footer/header.php';
+?>
+<main class="page-artistes"> <div class="center">
+  <a href="artistes.php" class="btn-back">← Retour à la liste</a>
+</div>
+
+  <section class="artist-profile-full">
+    <div class="profile-header">
+      <div class="avatar-placeholder big-profile">SC</div>
+
+      <div class="profile-info">
+        <h1>Sarah <span class="neon-text">"Loop"</span> Connor</h1>
+        <h2 class="artist-role">Lead Security Engineer</h2>
+
+        <p class="bio-full">
+          Ancienne White Hat reconvertie dans la protection des infrastructures critiques, Sarah a passé les dix dernières années à sécuriser des banques et des gouvernements.
+          <br><br>
+          Elle est connue pour avoir stoppé l'attaque "Skynet" en 2021 avec un simple script Python écrit en 3 minutes. Elle ne croit pas aux pare-feux, elle croit à l'architecture blindée.
+        </p>
+
+        <ul class="profile-stats">
+          <li>📅 <strong>Présence :</strong> Samedi 15 Nov.</li>
+          <li>📍 <strong>Origine :</strong> Los Angeles, USA</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="artist-prestations-list">
+    <div class="center">
+      <h3>Ses Missions Planifiées</h3>
+      <p>Cliquez pour voir les détails techniques.</p>
+    </div>
+
+    <div class="prestations-grid" style="margin-top: 20px;">
+
+      <a href="detailsPrestation.php" class="card-link">
+        <article class="prestation-card programmed">
+          <div class="card-header">
+            <span class="category-badge backend">Backend</span>
+            <div class="prestation-img-placeholder" style="background: linear-gradient(45deg, #1e1b4b, #312e81);">
+              <code>SQL_INJECT</code>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>Injections SQL en Apesanteur</h3>
+            <p class="description">Protéger vos bases de données contre les attaques.</p>
+          </div>
+          <div class="card-footer">
+            <div class="status-indicator active">
+              <time datetime="10:30">📅 10:30 - Salle Jupiter</time>
+            </div>
+          </div>
+        </article>
+      </a>
+
+      <a href="detailsPrestation.php" class="card-link">
+        <article class="prestation-card programmed">
+          <div class="card-header">
+            <span class="category-badge security">Débat</span>
+            <div class="prestation-img-placeholder" style="background: linear-gradient(45deg, #7c2d12, #431407);">
+              <code>VS</code>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>Débat : Tabs vs Spaces</h3>
+            <p class="description">Le combat final pour trancher la question.</p>
+          </div>
+          <div class="card-footer">
+            <div class="status-indicator active">
+              <time datetime="16:00">📅 16:00 - Salle Mars</time>
+            </div>
+          </div>
+        </article>
+      </a>
+
+    </div>
+  </section>
+
+</main>
+<?php
+include 'header-footer/footer.php';
+?>
+
+// detailsPrestation.php
+
+<!--<main class="center">
+    <section class="detail-content" style="padding: 50px 0;">
+        <h1>Détails de la Mission</h1>
+        <div style="background: rgba(13, 17, 41, 0.8); padding: 30px; border-radius: 10px; border: 1px solid #334155; max-width: 800px; margin: 0 auto; text-align: left;">
+            <h2 style="color: #67e8f9;">Titre de la Conférence / Atelier</h2>
+            <p style="color: #94a3b8; font-style: italic;">Proposé par : Nom du Speaker</p>
+            <hr style="border-color: #334155; margin: 20px 0;">
+            <p>
+                Voici le descriptif complet de cette prestation. Dans une version finale, ce texte changerait dynamiquement selon la carte cliquée.
+                Pour ce MVP, toutes les grilles pointent ici pour valider la structure de navigation.
+            </p>
+            <ul style="margin-top: 20px; list-style: none;">
+                <li>📅 <strong>Durée :</strong> 60 minutes</li>
+                <li>📍 <strong>Lieu :</strong> Space Center</li>
+                <li>🎓 <strong>Niveau :</strong> Intermédiaire</li>
+            </ul>
+            <br>
+            <a href="prestations.php" class="btn-search" style="text-decoration: none; display: inline-block; text-align: center;">← Retour au catalogue</a>
+        </div>
+    </section>
+</main>-->
+<?php
+session_start();
+require_once 'config/db.php';
+
+// 1. Récupération de l'ID depuis l'URL
+$id = isset($_GET['id']) ? $_GET['id'] : 0;
+
+if ($id <= 0) {
+    header("Location: prestations.php");
+    exit;
+}
+
+// 2. Requête SQL pour récupérer les détails de la prestation, l'artiste et la programmation
+$sql = "
+    SELECT p.*, c.intitule AS nom_categorie, u.uid AS artiste_id, u.nom_artiste, u.prenom, u.nom,
+           prog.heure_debut, s.nom_scene
+    FROM web2026_Prestation p
+    JOIN web2026_Categorie c ON p.categorie_id = c.cid
+    JOIN web2026_Utilisateur u ON p.artiste_id = u.uid
+    LEFT JOIN web2026_Programmation prog ON p.pid = prog.prestation_id
+    LEFT JOIN web2026_Scene s ON prog.scene_id = s.sid
+    WHERE p.pid = :id
+";
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute(array('id' => $id));
+$presta = $stmt->fetch();
+
+// Si la prestation n'existe pas
+if (!$presta) {
+    die("Erreur : Cette mission est introuvable dans les archives de la fédération.");
+}
+
+// Préparation des variables d'affichage
+$nom_pilote = !empty($presta['nom_artiste']) ? $presta['nom_artiste'] : $presta['prenom'] . ' ' . $presta['nom'];
+$mots = explode(' ', $presta['intitule']);
+$premier_mot = $mots[0];
+
+// Gestion des classes de couleurs (comme sur la page catalogue)
+$cat_id = $presta['categorie_id'];
+$classe_badge = ($cat_id >= 1 && $cat_id <= 4) ? 'badge-cat-' . $cat_id : 'badge-cat-default';
+$classe_bg = ($cat_id >= 1 && $cat_id <= 4) ? 'bg-cat-' . $cat_id : 'bg-cat-default';
+
+include 'header-footer/header.php';
+?>
+
+<main class="page-prestations">
+    <div class="center">
+        <a href="prestations.php" class="back-link">← Retour au catalogue</a>
+    </div>
+
+    <div class="details-container">
+        <div class="details-image-side">
+            <div class="details-img-wrapper"> <div class="details-img-big <?= $classe_bg ?>">
+                    <code><?= htmlspecialchars($premier_mot) ?></code>
+                </div>
+                <span class="category-badge details-category <?= $classe_badge ?>">
+                <?= htmlspecialchars($presta['nom_categorie']) ?>
+            </span>
+            </div>
+
+            <?php if (!empty($presta['heure_debut'])): ?>
+                <div class="details-meta-box">
+                    <h4>📅 Programmation</h4>
+                    <p>Cette mission est planifiée à <strong><?= htmlspecialchars(substr($presta['heure_debut'], 0, 5)) ?></strong>.</p>
+                    <p>Lieu : <strong><?= htmlspecialchars($presta['nom_scene']) ?></strong></p>
+                </div>
+            <?php else: ?>
+                <div class="details-meta-box status-pending">
+                    <h4>📅 Statut</h4>
+                    <p>Cette mission n'est pas encore inscrite au programme officiel de la journée.</p>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <div class="details-info-side">
+            <h1 class="details-title"><?= htmlspecialchars($presta['intitule']) ?></h1>
+
+            <p>
+                Proposé par le pilote :
+                <a href="detailsArtiste.php?id=<?= $presta['artiste_id'] ?>" class="link-pilot">
+                    <?= htmlspecialchars($nom_pilote) ?>
+                </a>
+            </p>
+
+            <div class="details-description">
+                <h3>Description de la mission</h3>
+                <p><?= nl2br(htmlspecialchars($presta['description'])) ?></p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<?php include 'header-footer/footer.php'; ?>
+
+// editerProfil.php
+
+<?php
+session_start();
+
+// SÉCURITÉ : Vérification de la connexion
+if (!isset($_SESSION['user_id'])) {
+    header("Location: connexion.php");
+    exit;
+}
+
+require_once 'config/db.php';
+$user_id = $_SESSION['user_id'];
+$erreurs = [];
+$message_succes = "";
+
+// RÉCUPÉRATION DES DONNÉES ACTUELLES
+$stmt = $pdo->prepare("SELECT * FROM web2026_Utilisateur WHERE uid = :uid");
+$stmt->execute(['uid' => $user_id]);
+$user = $stmt->fetch();
+
+// TRAITEMENT DU FORMULAIRE
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nom = trim($_POST['nom']);
+    $prenom = trim($_POST['prenom']);
+    $nom_artiste = trim($_POST['nom_artiste']);
+    $email = trim($_POST['email']);
+    $description = trim($_POST['description']);
+    $nouveau_mdp = $_POST['nouveau_mdp'];
+    $conf_mdp = $_POST['conf_mdp'];
+
+    // Vérifications de base
+    if (empty($nom) || empty($prenom) || empty($email)) {
+        $erreurs[] = "Les champs Nom, Prénom et Email sont obligatoires.";
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $erreurs[] = "Le format de l'adresse e-mail n'est pas valide.";
+    }
+
+    if ($email !== $user['email'] && empty($erreurs)) {
+        $stmt_check = $pdo->prepare("SELECT COUNT(*) FROM web2026_Utilisateur WHERE email = :email AND uid != :uid");
+        $stmt_check->execute(['email' => $email, 'uid' => $user_id]);
+        if ($stmt_check->fetchColumn() > 0) {
+            $erreurs[] = "Cette adresse e-mail est déjà utilisée par un autre compte.";
+        }
+    }
+
+    if (!empty($nouveau_mdp)) {
+        if ($nouveau_mdp !== $conf_mdp) {
+            $erreurs[] = "Les nouveaux mots de passe ne correspondent pas.";
+        }
+    }
+
+    // MISE À JOUR DANS LA BASE DE DONNÉES
+    if (empty($erreurs)) {
+        if (!empty($nouveau_mdp)) {
+            $mdp_hashe = password_hash($nouveau_mdp, PASSWORD_DEFAULT);
+            $sql_update = "UPDATE web2026_Utilisateur SET nom = :nom, prenom = :prenom, nom_artiste = :nom_artiste, email = :email, description = :description, mot_passe_hashe = :mdp WHERE uid = :uid";
+            $stmt_update = $pdo->prepare($sql_update);
+            $succes = $stmt_update->execute([
+                'nom' => $nom, 'prenom' => $prenom, 'nom_artiste' => $nom_artiste,
+                'email' => $email, 'description' => $description, 'mdp' => $mdp_hashe, 'uid' => $user_id
+            ]);
+        } else {
+            $sql_update = "UPDATE web2026_Utilisateur SET nom = :nom, prenom = :prenom, nom_artiste = :nom_artiste, email = :email, description = :description WHERE uid = :uid";
+            $stmt_update = $pdo->prepare($sql_update);
+            $succes = $stmt_update->execute([
+                'nom' => $nom, 'prenom' => $prenom, 'nom_artiste' => $nom_artiste,
+                'email' => $email, 'description' => $description, 'uid' => $user_id
+            ]);
+        }
+
+        if ($succes) {
+            $message_succes = "Votre profil a été mis à jour avec succès.";
+            $stmt->execute(['uid' => $user_id]);
+            $user = $stmt->fetch();
+        } else {
+            $erreurs[] = "Une erreur est survenue lors de la mise à jour.";
+        }
+    }
+}
+
+include 'header-footer/header.php';
+?>
+
+    <main class="page-prestations">
+        <div class="center profile-edit-header">
+            <a href="dashboard.php" class="back-link">← Retour au tableau de bord</a>
+            <h1 class="profile-edit-title">Éditer mon profil</h1>
+            <p class="profile-edit-subtitle">Mettez à jour vos informations de pilote.</p>
+        </div>
+
+        <div class="alert-container">
+            <?php if (!empty($erreurs)): ?>
+                <div class="alert-error">
+                    <ul>
+                        <?php foreach ($erreurs as $erreur): ?>
+                            <li><?= htmlspecialchars($erreur) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($message_succes)): ?>
+                <div class="alert-success">
+                    <?= htmlspecialchars($message_succes) ?>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <div class="form-container">
+            <form action="editerProfil.php" method="post" class="space-form">
+
+                <div class="form-group">
+                    <label for="nom">Nom *</label>
+                    <input type="text" id="nom" name="nom" value="<?= htmlspecialchars(isset($user['nom']) ? $user['nom'] : '') ?>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="prenom">Prénom *</label>
+                    <input type="text" id="prenom" name="prenom" value="<?= htmlspecialchars(isset($user['prenom']) ? $user['prenom'] : '') ?>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nom_artiste">Nom d'artiste / Pseudo</label>
+                    <input type="text" id="nom_artiste" name="nom_artiste" value="<?= htmlspecialchars(isset($user['nom_artiste']) ? $user['nom_artiste'] : '') ?>">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email de liaison *</label>
+                    <input type="email" id="email" name="email" value="<?= htmlspecialchars(isset($user['email']) ? $user['email'] : '') ?>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Biographie / Description</label>
+                    <textarea id="description" name="description" rows="5"><?= htmlspecialchars(isset($user['description']) ? $user['description'] : '') ?></textarea>
+                </div>
+
+                <h3 class="password-section-title">Sécurité</h3>
+                <span class="helper-text">Laissez ces champs vides si vous ne souhaitez pas modifier votre mot de passe actuel.</span>
+
+                <div class="form-group">
+                    <label for="nouveau_mdp">Nouveau mot de passe</label>
+                    <input type="password" id="nouveau_mdp" name="nouveau_mdp" placeholder="********">
+                </div>
+
+                <div class="form-group">
+                    <label for="conf_mdp">Confirmer le nouveau mot de passe</label>
+                    <input type="password" id="conf_mdp" name="conf_mdp" placeholder="********">
+                </div>
+
+                <button type="submit" class="btn-primary">Mettre à jour mes informations</button>
+            </form>
+        </div>
+    </main>
+
+<?php include 'header-footer/footer.php'; ?>
+
+// gerePrestation.php
+
+<?php
+session_start();
+// Vérification de sécurité : il faut être connecté
+if (!isset($_SESSION['user_id'])) {
+    header("Location: connexion.php");
+    exit;
+}
+
+require_once 'config/db.php';
+$user_id = $_SESSION['user_id'];
+$erreurs = [];
+$message_succes = "";
+
+// --- 1. GESTION DE LA SUPPRESSION (UC-C.3) ---
+if (isset($_GET['supprimer_id'])) {
+    $id_a_supprimer = $_GET['supprimer_id'];
+
+    // Vérification : La prestation est-elle déjà dans le programme ?
+    $stmt_check = $pdo->prepare("SELECT COUNT(*) FROM web2026_Programmation WHERE prestation_id = :pid");
+    $stmt_check->execute(['pid' => $id_a_supprimer]);
+    $est_programme = $stmt_check->fetchColumn();
+
+    if ($est_programme > 0) {
+        $erreurs[] = "Impossible de supprimer cette prestation car elle fait partie du programme officiel. Veuillez contacter l'organisateur.";
+    } else {
+        $stmt_delete = $pdo->prepare("DELETE FROM web2026_Prestation WHERE pid = :pid AND artiste_id = :uid");
+        if ($stmt_delete->execute(['pid' => $id_a_supprimer, 'uid' => $user_id])) {
+            $message_succes = "La prestation a été retirée de votre catalogue.";
+        }
+    }
+}
+
+// --- 2. GESTION DE L'AJOUT D'UNE PRESTATION (UC-C.1) ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'ajouter') {
+    $titre = trim($_POST['intitule']);
+    $description = trim($_POST['description']);
+    $categorie_id = $_POST['categorie_id'];
+
+    if (empty($titre) || empty($description) || empty($categorie_id)) {
+        $erreurs[] = "Tous les champs obligatoires doivent être remplis.";
+    } else {
+        $sql_insert = "INSERT INTO web2026_Prestation (intitule, description, image, categorie_id, artiste_id)
+                       VALUES (:titre, :desc, 'default.png', :cat_id, :uid)";
+        $stmt_insert = $pdo->prepare($sql_insert);
+        if ($stmt_insert->execute(['titre' => $titre, 'desc' => $description, 'cat_id' => $categorie_id, 'uid' => $user_id])) {
+            $message_succes = "Nouvelle prestation ajoutée avec succès à votre catalogue !";
+        }
+    }
+}
+
+// --- 3. RÉCUPÉRATION DES DONNÉES POUR L'AFFICHAGE ---
+$stmt_catalogue = $pdo->prepare("
+    SELECT p.*, c.intitule AS nom_categorie
+    FROM web2026_Prestation p
+    JOIN web2026_Categorie c ON p.categorie_id = c.cid
+    WHERE p.artiste_id = :uid
+");
+$stmt_catalogue->execute(['uid' => $user_id]);
+$prestations = $stmt_catalogue->fetchAll();
+
+$categories = $pdo->query("SELECT * FROM web2026_Categorie")->fetchAll();
+
+include 'header-footer/header.php';
+?>
+
+    <main class="page-prestations">
+        <div class="center">
+            <a href="dashboard.php" class="back-link">← Retour au tableau de bord</a>
+            <h1>Gestion de mon Catalogue</h1>
+            <p>Gérez vos modules de formation et conférences.</p>
+        </div>
+
+        <div class="alert-container">
+            <?php if (!empty($erreurs)): ?>
+                <div class="alert-error">
+                    <ul>
+                        <?php foreach ($erreurs as $erreur): ?>
+                            <li><?= htmlspecialchars($erreur) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($message_succes)): ?>
+                <div class="alert-success">
+                    <?= htmlspecialchars($message_succes) ?>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <div class="prestations-grid prestations-wrapper">
+            <?php if (count($prestations) > 0): ?>
+                <?php foreach ($prestations as $presta): ?>
+                    <article class="prestation-card catalog">
+                        <div class="card-header">
+                            <span class="category-badge security"><?= htmlspecialchars($presta['nom_categorie']) ?></span>
+                            <div class="prestation-img-placeholder bg-gradient-catalog">
+                                <code><?= htmlspecialchars(substr($presta['intitule'], 0, 3)) ?></code>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h3><?= htmlspecialchars($presta['intitule']) ?></h3>
+                            <p class="description"><?= htmlspecialchars($presta['description']) ?></p>
+                        </div>
+                        <div class="card-footer card-actions">
+                            <a href="gererPrestations.php?supprimer_id=<?= $presta['pid'] ?>"
+                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette prestation ? Cette action est irréversible.');"
+                               class="btn-primary btn-danger btn-small">
+                                🗑️ Supprimer
+                            </a>
+                            <a href="#" class="btn-primary btn-outline btn-small">✏️ Modifier</a>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="catalog-empty">
+                    <p>Votre catalogue est vide. Ajoutez votre première prestation ci-dessous !</p>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <div class="form-container">
+            <h2 class="form-title">Ajouter une nouvelle prestation</h2>
+
+            <form action="gererPrestations.php" method="post" class="space-form">
+                <input type="hidden" name="action" value="ajouter">
+
+                <div class="form-group">
+                    <label for="intitule">Titre de la prestation *</label>
+                    <input type="text" id="intitule" name="intitule" placeholder="Ex: Atelier Javascript avancé" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="categorie_id">Catégorie *</label>
+                    <select id="categorie_id" name="categorie_id" required>
+                        <option value="">-- Sélectionnez une catégorie --</option>
+                        <?php foreach ($categories as $cat): ?>
+                            <option value="<?= $cat['cid'] ?>"><?= htmlspecialchars($cat['intitule']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description détaillée *</label>
+                    <textarea id="description" name="description" rows="4" placeholder="Décrivez le contenu de votre mission..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary">Ajouter au catalogue 🚀</button>
+            </form>
+        </div>
+    </main>
+
+<?php include 'header-footer/footer.php'; ?>
+
+// index.php
+
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+require_once 'config/db.php';
+
+include 'header-footer/header.php';
+
+?>
+<main>
+    <section class="presentation">
+        <div class="center">
+            <img src="img/logo.png" alt="Logo officiel de la convention DevGalaxy">
+            <h1>Dev Galaxy</h1>
+            <p>Codez au-delà de l'atmosphère. L'avenir du développement web commence ici.</p>
+            <p>Une odyssée technologique de 24h pour explorer les frontières du Backend, du Frontend et de l'Intelligence Artificielle.</p>
+            <p>Bienvenue à bord de DevGalaxy 2025, la convention ultime pour les développeurs qui refusent de garder les pieds sur terre. <br>Dans un écosystème numérique en constante expansion, il ne suffit plus de connaître son langage ; il faut comprendre l'univers qui l'entoure.
+
+                <br>Cette année, nous transformons le Space Center en un véritable vaisseau amiral de l'innovation. <br>Que vous soyez un architecte de données naviguant dans le cloud ou un designer sculptant des interfaces en apesanteur, DevGalaxy est votre station de ravitaillement.</p>
+        </div>
+    </section>
+
+    <section class="programme-section">
+        <div class="center">
+            <h2>Programme de vol</h2>
+
+            <div class="table-wrapper">
+                <table class="events-table">
+                    <caption style="position: absolute; width: 1px; height: 1px; overflow: hidden;">Programme détaillé des conférences et ateliers</caption>
+                    <thead>
+                    <tr>
+                        <th scope="col">Horaire</th>
+                        <th scope="col">Mission</th>
+                        <th scope="col">Pilote (Speaker)</th>
+                        <th scope="col">Lieu</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                    $sql_programme = "SELECT p.heure_debut, pr.intitule AS mission, pr.description AS description_prestation, u.nom_artiste AS pilote, s.nom_scene AS lieu FROM web2026_Programmation p JOIN web2026_Prestation pr ON p.prestation_id = pr.pid JOIN web2026_Utilisateur u ON pr.artiste_id = u.uid JOIN web2026_Scene s ON p.scene_id = s.sid ORDER BY p.heure_debut ASC";
+
+                    $stmt_prog = $pdo->query($sql_programme);
+                    $programme = $stmt_prog->fetchAll();
+
+                    if (count($programme) > 0):
+                        foreach ($programme as $event):
+                            $heure = substr($event['heure_debut'], 0, 5);
+
+                            // --- GESTION DYNAMIQUE DES COULEURS DES BADGES ---
+                            $badge_class = 'badge-jupiter'; // Par défaut
+                            $lieu_minuscule = strtolower($event['lieu']);
+
+                            if (strpos($lieu_minuscule, 'mars') !== false) {
+                                $badge_class = 'badge-mars';
+                            } elseif (strpos($lieu_minuscule, 'saturne') !== false) {
+                                $badge_class = 'badge-saturne';
+                            }
+                            // ---------------------------------------------------
+                            ?>
+
+                            <tr>
+                                <td class="time"><?= htmlspecialchars($heure) ?></td>
+                                <td>
+                                    <strong class="event-title">
+                                        <a href="detailsPrestation.php">
+                                            <?= htmlspecialchars($event['mission']) ?>
+                                        </a>
+                                    </strong>
+                                    <span class="event-desc"><?= htmlspecialchars($event['description_prestation']) ?></span>
+                                </td>
+                                <td><?= htmlspecialchars($event['pilote']) ?></td>
+
+                                <td><span class="badge <?= $badge_class ?>"><?= htmlspecialchars($event['lieu']) ?></span></td>
+                            </tr>
+
+                        <?php
+                        endforeach;
+                    else:
+                        ?>
+
+                        <tr>
+                            <td colspan="4">
+                                Le programme est en cours d'élaboration. Revenez bientôt !
+                            </td>
+                        </tr>
+
+                    <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+<?php
+include 'header-footer/footer.php';
+?>
+
+// inscription.php
+
+<?php
+// 1. On démarre la session (indispensable pour connecter l'utilisateur plus tard)
+session_start();
+
+// 2. On se connecte à la base de données
+require_once 'config/db.php';
+
+// Variables pour pré-remplir le formulaire en cas d'erreur
+$nom = $prenom = $pseudo = $email = $description = '';
+$erreurs = [];
+
+// 3. Traitement du formulaire quand l'utilisateur clique sur "Envoyer"
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    // Récupération et nettoyage des données tapées
+    $nom = trim($_POST['nom']);
+    $prenom = trim($_POST['prenom']);
+    $pseudo = trim($_POST['pseudo']);
+    $description = trim($_POST['message']); // Tu avais appelé ce champ "message"
+    $email = trim($_POST['email']);
+    $mdp = $_POST['mdp'];
+    $conf_mdp = $_POST['conf_mdp'];
+
+    // --- SÉRIE DE VÉRIFICATIONS ---
+    if (empty($nom) || empty($prenom) || empty($pseudo) || empty($email) || empty($description) || empty($mdp) || empty($conf_mdp)) {
+        $erreurs[] = "Tous les champs obligatoires doivent être remplis.";
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $erreurs[] = "Le format de l'adresse e-mail n'est pas valide.";
+    }
+
+    if ($mdp !== $conf_mdp) {
+        $erreurs[] = "Les mots de passe ne correspondent pas.";
+    }
+
+    // Vérifier si l'email existe déjà dans la base
+    if (empty($erreurs)) {
+        $stmt_check = $pdo->prepare("SELECT COUNT(*) FROM web2026_Utilisateur WHERE email = ?");
+        $stmt_check->execute([$email]);
+        if ($stmt_check->fetchColumn() > 0) {
+            $erreurs[] = "Cette adresse e-mail est déjà utilisée par un autre pilote.";
+        }
+    }
+
+    // --- INSCRIPTION DANS LA BASE DE DONNÉES ---
+    if (empty($erreurs)) {
+        // Hachage du mot de passe (Cryptage de sécurité)
+        $mdp_hashe = password_hash($mdp, PASSWORD_DEFAULT);
+
+        // Préparation de la requête d'insertion
+        $sql_insert = "INSERT INTO web2026_Utilisateur (nom, prenom, nom_artiste, email, mot_passe_hashe, description, est_organisateur)
+                       VALUES (:nom, :prenom, :pseudo, :email, :mdp, :desc, 0)";
+
+        $stmt_insert = $pdo->prepare($sql_insert);
+        $succes = $stmt_insert->execute([
+                'nom' => $nom,
+                'prenom' => $prenom,
+                'pseudo' => $pseudo,
+                'email' => $email,
+                'mdp' => $mdp_hashe,
+                'desc' => $description
+        ]);
+
+        if ($succes) {
+            // Connexion automatique de l'utilisateur (On retient son ID en session)
+            $_SESSION['user_id'] = $pdo->lastInsertId();
+            $_SESSION['est_organisateur'] = 0;
+
+            // Redirection vers l'accueil (ou vers le futur tableau de bord)
+            header("Location: index.php?inscription=succes");
+            exit;
+        } else {
+            $erreurs[] = "Une erreur est survenue lors de l'inscription. L'anomalie a été signalée.";
+        }
+    }
+}
+
+// Seulement après le traitement PHP (et les redirections), on charge le visuel (header)
+include 'header-footer/header.php';
+?>
+
+<main class="inscription-section">
+    <div class="container-contact">
+
+        <div class="inscription-form-wrapper">
+            <form action="inscription.php" method="post" class="space-form" aria-label="Création de votre compte">
+                <fieldset style="border: none; padding: 0; margin: 0;">
+                    <legend style="position: absolute; width: 1px; height: 1px; overflow: hidden;">Création de votre compte Artiste</legend>
+
+                    <h1>Inscription Pilote</h1>
+
+                    <?php if (!empty($erreurs)): ?>
+                        <div class="alert">
+                            <ul>
+                                <?php foreach ($erreurs as $erreur): ?>
+                                    <li><?= htmlspecialchars($erreur) ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="form-group">
+                        <label for="nom">Nom *</label>
+                        <input type="text" id="nom" name="nom" placeholder="Ex: Shepard" value="<?= htmlspecialchars($nom) ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prenom">Prénom *</label>
+                        <input type="text" id="prenom" name="prenom" placeholder="Ex: John" value="<?= htmlspecialchars($prenom) ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pseudo">Nom d'artiste (Pseudo) *</label>
+                        <input type="text" id="pseudo" name="pseudo" placeholder="Ex: Commander Shepard" value="<?= htmlspecialchars($pseudo) ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Biographie / Description *</label>
+                        <textarea id="message" name="message" rows="5" placeholder="Votre spécialité, votre parcours..." required><?= htmlspecialchars($description) ?></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email de liaison *</label>
+                        <input type="email" id="email" name="email" placeholder="nom@domaine.com" value="<?= htmlspecialchars($email) ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mdp">Mot de passe *</label>
+                        <input type="password" id="mdp" name="mdp" placeholder="********" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="conf_mdp">Confirmation mot de passe *</label>
+                        <input type="password" id="conf_mdp" name="conf_mdp" placeholder="********" required>
+                    </div>
+
+                    <button type="submit" class="btn-primary">S'enrôler dans l'équipage 🚀</button>
+                </fieldset>
+            </form>
+            <br><p>* : champs obligatoires</p>
+        </div>
+
+    </div>
+</main>
+
+<?php
+include 'header-footer/footer.php';
+?>
+
+// prestations.php
+
+<?php
+session_start();
+require_once 'config/db.php';
+
+// --- 1. RÉCUPÉRATION DES DONNÉES POUR LES LISTES DÉROULANTES ---
+$artistes = $pdo->query("SELECT uid, nom, prenom, nom_artiste FROM web2026_Utilisateur WHERE est_organisateur = 0")->fetchAll();
+$categories = $pdo->query("SELECT * FROM web2026_Categorie")->fetchAll();
+
+// --- 2. GESTION DES FILTRES ---
+// Remplacement du Null Coalescing Operator (??) par des isset() classiques
+$search = isset($_GET['search']) ? $_GET['search'] : '';
+$filtre_artiste = isset($_GET['artiste_id']) ? $_GET['artiste_id'] : '';
+$filtre_categorie = isset($_GET['categorie_id']) ? $_GET['categorie_id'] : '';
+$uniquement_programmees = isset($_GET['programme']);
+
+// --- 3. CONSTRUCTION DYNAMIQUE DE LA REQUÊTE SQL ---
+$sql = "
+    SELECT p.*, c.intitule AS nom_categorie, u.nom_artiste, u.prenom, u.nom,
+           prog.heure_debut, s.nom_scene
+    FROM web2026_Prestation p
+    JOIN web2026_Categorie c ON p.categorie_id = c.cid
+    JOIN web2026_Utilisateur u ON p.artiste_id = u.uid
+    LEFT JOIN web2026_Programmation prog ON p.pid = prog.prestation_id
+    LEFT JOIN web2026_Scene s ON prog.scene_id = s.sid
+    WHERE 1=1
+";
+
+// Remplacement des crochets [] par array() pour faire plaisir à ton éditeur
+$params = array();
+
+if (!empty($search)) {
+    $sql .= " AND (p.intitule LIKE :search OR p.description LIKE :search)";
+    $params['search'] = '%' . $search . '%';
+}
+
+if (!empty($filtre_artiste)) {
+    $sql .= " AND p.artiste_id = :artiste_id";
+    $params['artiste_id'] = $filtre_artiste;
+}
+
+if (!empty($filtre_categorie)) {
+    $sql .= " AND p.categorie_id = :categorie_id";
+    $params['categorie_id'] = $filtre_categorie;
+}
+
+if ($uniquement_programmees) {
+    // Si la case est cochée, on ne prend que celles qui ont une entrée dans la table Programmation
+    $sql .= " AND prog.prog_id IS NOT NULL";
+}
+
+$sql .= " ORDER BY p.intitule ASC";
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$prestations = $stmt->fetchAll();
+
+include 'header-footer/header.php';
+?>
+
+<main class="page-prestations">
+    <div class="catalog-header">
+        <h1 class="catalog-title">Catalogue des Missions</h1>
+        <p>Explorez toutes les conférences, ateliers et modules proposés par nos pilotes.</p>
+    </div>
+
+    <section class="search-section">
+        <form action="prestations.php" method="get" class="filter-form">
+
+            <div class="filter-group">
+                <label for="search">Recherche par mot-clé</label>
+                <input type="text" id="search" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Ex: Javascript, IA...">
+            </div>
+
+            <div class="filter-group">
+                <label for="artiste_id">Filtrer par Pilote</label>
+                <select id="artiste_id" name="artiste_id">
+                    <option value="">Tous les pilotes</option>
+                    <?php foreach ($artistes as $art):
+                        $nom_affich = !empty($art['nom_artiste']) ? $art['nom_artiste'] : $art['prenom'] . ' ' . $art['nom'];
+                        $selected = ($filtre_artiste == $art['uid']) ? 'selected' : '';
+                        ?>
+                        <option value="<?= $art['uid'] ?>" <?= $selected ?>><?= htmlspecialchars($nom_affich) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="categorie_id">Filtrer par Catégorie</label>
+                <select id="categorie_id" name="categorie_id">
+                    <option value="">Toutes les catégories</option>
+                    <?php foreach ($categories as $cat):
+                        $selected = ($filtre_categorie == $cat['cid']) ? 'selected' : '';
+                        ?>
+                        <option value="<?= $cat['cid'] ?>" <?= $selected ?>><?= htmlspecialchars($cat['intitule']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="filter-checkbox">
+                <input type="checkbox" id="programme" name="programme" value="1" <?= $uniquement_programmees ? 'checked' : '' ?>>
+                <label for="programme">Afficher uniquement les missions programmées</label>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn-primary">Filtrer</button>
+                <a href="prestations.php" class="btn-primary btn-outline btn-small">Réinitialiser</a>
+            </div>
+        </form>
+    </section>
+
+    <div class="prestations-grid prestations-wrapper">
+        <?php if (count($prestations) > 0): ?>
+            <?php foreach ($prestations as $presta):
+                // Gestion du nom du pilote
+                $nom_pilote = !empty($presta['nom_artiste']) ? $presta['nom_artiste'] : $presta['prenom'] . ' ' . $presta['nom'];
+
+                // --- GESTION DYNAMIQUE DES COULEURS ---
+                // On récupère l'ID de la catégorie (1, 2, 3 ou 4)
+                $cat_id = $presta['categorie_id'];
+
+                // On vérifie si on a bien prévu une couleur pour cet ID, sinon on met "default"
+                if ($cat_id >= 1 && $cat_id <= 4) {
+                    $classe_badge = 'badge-cat-' . $cat_id;
+                    $classe_bg = 'bg-cat-' . $cat_id;
+                } else {
+                    $classe_badge = 'badge-cat-default';
+                    $classe_bg = 'bg-cat-default';
+                }
+                ?>
+                <a href="detailsPrestation.php?id=<?= $presta['pid'] ?>" class="card-link">
+                    <article class="prestation-card catalog">
+                        <div class="card-header">
+                            <span class="category-badge <?= $classe_badge ?>"><?= htmlspecialchars($presta['nom_categorie']) ?></span>
+
+                            <div class="prestation-img-placeholder <?= $classe_bg ?>">
+                                <?php
+                                // On découpe l'intitulé par les espaces
+                                $mots = explode(' ', $presta['intitule']);
+                                // On récupère le premier élément du tableau (le premier mot)
+                                $premier_mot = $mots[0];
+                                ?>
+                                <code><?= htmlspecialchars($premier_mot) ?></code>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h3><?= htmlspecialchars($presta['intitule']) ?></h3>
+
+                            <div class="prestation-meta">
+                                <span class="meta-artist">👤 <?= htmlspecialchars($nom_pilote) ?></span>
+
+                                <p class="description"><?= htmlspecialchars($presta['description']) ?></p>
+
+                                <?php if (!empty($presta['heure_debut'])): ?>
+                                    <span class="meta-schedule">📅 Prévu à <?= htmlspecialchars(substr($presta['heure_debut'], 0, 5)) ?> (<?= htmlspecialchars($presta['nom_scene']) ?>)</span>
+                                <?php else: ?>
+                                    <span class="meta-not-scheduled">En attente de planification</span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="no-results">
+                <p>Aucune mission ne correspond à vos critères de recherche. Essayez de modifier vos filtres.</p>
+            </div>
+        <?php endif; ?>
+    </div>
+</main>
+
+<?php include 'header-footer/footer.php'; ?>

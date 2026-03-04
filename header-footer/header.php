@@ -1,3 +1,10 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+// On récupère le nom du fichier en cours de lecture
+$current_page = basename($_SERVER['PHP_SELF']);
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -133,25 +140,30 @@
         <div class="decorative text-element" style="left: 3%; top: 35%;">5 9</div>
     </div>
     <div class="logoTitre">
-        <img src="img/logo.png" alt="logo">
+        <img src="img/logo.png" alt="Logo officiel de la convention DevGalaxy">
         <h2>Dev Galaxy</h2>
     </div>
-    <nav>
+    <nav aria-label="Menu principal">
         <ul>
             <li>
-                <a href="index.php">Acceuil</a>
+                <a href="index.php" class="<?php echo ($current_page == 'index.php') ? 'active' : ''; ?>">Accueil</a>
             </li>
             <li>
-                <a href="artistes.php">Artistes</a>
+                <a href="artistes.php" class="<?php echo ($current_page == 'artistes.php') ? 'active' : ''; ?>">Artistes</a>
             </li>
             <li>
-                <a href="prestations.php">Prestations</a>
+                <a href="prestations.php" class="<?php echo ($current_page == 'prestations.php') ? 'active' : ''; ?>">Prestations</a>
             </li>
             <li>
-                <a href="contact.php">Contact</a>
+                <a href="contact.php" class="<?php echo ($current_page == 'contact.php') ? 'active' : ''; ?>">Contact</a>
             </li>
+            <?php if (isset($_SESSION['user_id'])): // SI L'UTILISATEUR EST CONNECTÉ ?>
+                <li><a href="dashboard.php" class="<?= ($current_page == 'dashboard.php') ? 'active' : '' ?>">Mon Espace</a></li>
+                <li><a href="deconnexion.php" class="btn-inscription">Déconnexion</a></li>
+            <?php else: // SI L'UTILISATEUR N'EST PAS CONNECTÉ ?>
+                <li><a href="connexion.php" class="<?= ($current_page == 'connexion.php') ? 'active' : '' ?>">Connexion</a></li>
+                <li><a href="inscription.php" class="btn-inscription <?= ($current_page == 'inscription.php') ? 'active' : '' ?>">Inscription</a></li>
+            <?php endif; ?>
         </ul>
     </nav>
-
-    <a href="inscription.php">Inscription</a>
 </header>
