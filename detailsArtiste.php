@@ -1,32 +1,8 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <title>Profil Artiste - DevGalaxy</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-
-<header>
-  <div class="space-background"></div>
-  <div class="logoTitre">
-    <img src="img/logo.png" alt="logo">
-    <h2>Dev Galaxy</h2>
-  </div>
-  <nav>
-    <ul>
-      <li><a href="index.html">Accueil</a></li>
-      <li><a href="artistes.html">Artistes</a></li>
-      <li><a href="prestations.html">Prestations</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
-  </nav>
-</header>
-
+<?php
+include 'header-footer/header.php';
+?>
 <main class="page-artistes"> <div class="center">
-  <a href="artistes.html" class="btn-back">← Retour à la liste</a>
+  <a href="artistes.php" class="btn-back">← Retour à la liste</a>
 </div>
 
   <section class="artist-profile-full">
@@ -59,7 +35,7 @@
 
     <div class="prestations-grid" style="margin-top: 20px;">
 
-      <a href="detailsPrestation.html" class="card-link">
+      <a href="detailsPrestation.php" class="card-link">
         <article class="prestation-card programmed">
           <div class="card-header">
             <span class="category-badge backend">Backend</span>
@@ -79,7 +55,7 @@
         </article>
       </a>
 
-      <a href="detailsPrestation.html" class="card-link">
+      <a href="detailsPrestation.php" class="card-link">
         <article class="prestation-card programmed">
           <div class="card-header">
             <span class="category-badge security">Débat</span>
@@ -103,7 +79,6 @@
   </section>
 
 </main>
-
-<footer>© 2026 DevGalaxy</footer>
-</body>
-</html>
+<?php
+include 'header-footer/footer.php';
+?>

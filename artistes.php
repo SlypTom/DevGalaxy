@@ -1,34 +1,6 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <title>Artistes - DevGalaxy</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-
-<header>
-  <div class="space-background">
-    <div class="star" style="left: 10%; top: 10%; width: 2px; height: 2px;"></div>
-    <div class="star" style="left: 90%; top: 50%; width: 2px; height: 2px;"></div>
-  </div>
-
-  <div class="logoTitre">
-    <img src="img/logo.png" alt="logo">
-    <h2>Dev Galaxy</h2>
-  </div>
-  <nav>
-    <ul>
-      <li><a href="index.html">Accueil</a></li>
-      <li><a href="artistes.html" class="active">Artistes</a></li> <li><a href="prestations.html">Prestations</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
-  </nav>
-  <a href="#" class="btn-inscription">Inscription</a>
-</header>
-
+<?php
+include 'header-footer/header.php';
+?>
 <main class="page-artistes">
 
   <div class="center">
@@ -46,7 +18,7 @@
 
   <div class="artists-grid">
 
-    <a href="detailsArtiste.html" class="card-link">
+    <a href="detailsArtiste.php" class="card-link">
       <article class="artist-card">
         <div class="artist-photo">
           <div class="avatar-placeholder big">SC</div>
@@ -75,7 +47,7 @@
       </article>
     </a>
 
-    <a href="detailsArtiste.html" class="card-link">
+    <a href="detailsArtiste.php" class="card-link">
       <article class="artist-card">
         <div class="artist-photo">
           <div class="avatar-placeholder big" style="border-color: #f97316;">DB</div>
@@ -99,7 +71,7 @@
       </article>
     </a>
 
-    <a href="detailsArtiste.html" class="card-link">
+    <a href="detailsArtiste.php" class="card-link">
       <article class="artist-card">
         <div class="artist-photo">
           <div class="avatar-placeholder big" style="border-color: #ef4444;">HAL</div>
@@ -123,7 +95,7 @@
       </article>
     </a>
 
-    <a href="detailsArtiste.html" class="card-link">
+    <a href="detailsArtiste.php" class="card-link">
       <article class="artist-card not-programmed">
         <div class="artist-photo">
           <div class="avatar-placeholder big" style="border-color: #94a3b8; color: #94a3b8;">JR</div>
@@ -142,8 +114,6 @@
 
   </div>
 </main>
-
-<footer>© 2026 DevGalaxy</footer>
-
-</body>
-</html>
+<?php
+include 'header-footer/footer.php';
+?>

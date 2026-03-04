@@ -1,29 +1,6 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Détail de la Mission - DevGalaxy</title>
-    <link rel="stylesheet" href="css/style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-
-<header>
-    <div class="space-background"></div>
-    <div class="logoTitre">
-        <img src="img/logo.png" alt="logo">
-        <h2>Dev Galaxy</h2>
-    </div>
-    <nav>
-        <ul>
-            <li><a href="index.html">Accueil</a></li>
-            <li><a href="artistes.html">Artistes</a></li>
-            <li><a href="prestations.html">Prestations</a></li>
-            <li><a href="contact.html">Contact</a></li>
-        </ul>
-    </nav>
-</header>
-
+<?php
+include 'header-footer/header.php';
+?>
 <main class="center">
     <section class="detail-content" style="padding: 50px 0;">
         <h1>Détails de la Mission</h1>
@@ -41,11 +18,10 @@
                 <li>🎓 <strong>Niveau :</strong> Intermédiaire</li>
             </ul>
             <br>
-            <a href="prestations.html" class="btn-search" style="text-decoration: none; display: inline-block; text-align: center;">← Retour au catalogue</a>
+            <a href="prestations.php" class="btn-search" style="text-decoration: none; display: inline-block; text-align: center;">← Retour au catalogue</a>
         </div>
     </section>
 </main>
-
-<footer>© 2026 DevGalaxy</footer>
-</body>
-</html>
+<?php
+include 'header-footer/footer.php';
+?>

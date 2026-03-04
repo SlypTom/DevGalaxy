@@ -1,32 +1,6 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Prestations - DevGalaxy</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-
-<header>
-    <div class="space-background">
-    </div>
-
-    <div class="logoTitre">
-        <img src="img/logo.png" alt="logo">
-        <h2>Dev Galaxy</h2>
-    </div>
-    <nav>
-        <ul>
-            <li><a href="index.html">Accueil</a></li>
-            <li><a href="artistes.html">Artistes</a></li>
-            <li><a href="prestations.html" class="active">Prestations</a></li> <li><a href="contact.html">Contact</a></li>
-        </ul>
-    </nav>
-    <a href="#" class="btn-inscription">Inscription</a>
-</header>
-
+<?php
+include 'header-footer/header.php';
+?>
 <main class="page-prestations">
 
     <div class="center">
@@ -76,7 +50,7 @@
 
     <div class="prestations-grid">
 
-        <a href="detailsPrestation.html" class="card-link">
+        <a href="detailsPrestation.php" class="card-link">
             <article class="prestation-card programmed">
                 <div class="card-header">
                     <span class="category-badge backend">Backend</span>
@@ -98,7 +72,7 @@
             </article>
         </a>
 
-        <a href="detailsPrestation.html" class="card-link">
+        <a href="detailsPrestation.php" class="card-link">
             <article class="prestation-card programmed">
                 <div class="card-header">
                     <span class="category-badge frontend">Frontend</span>
@@ -120,7 +94,7 @@
             </article>
         </a>
 
-        <a href="detailsPrestation.html" class="card-link">
+        <a href="detailsPrestation.php" class="card-link">
             <article class="prestation-card catalog">
                 <div class="card-header">
                     <span class="category-badge security">Audit</span>
@@ -142,7 +116,7 @@
             </article>
         </a>
 
-        <a href="detailsPrestation.html" class="card-link">
+        <a href="detailsPrestation.php" class="card-link">
             <article class="prestation-card catalog">
                 <div class="card-header">
                     <span class="category-badge frontend">Design</span>
@@ -166,8 +140,6 @@
 
     </div>
 </main>
-
-<footer>© 2026 DevGalaxy</footer>
-
-</body>
-</html>
+<?php
+include 'header-footer/footer.php';
+?>
