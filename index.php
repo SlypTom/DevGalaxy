@@ -27,15 +27,15 @@ include 'header-footer/header.php';
 
             <div class="table-wrapper">
                 <table class="events-table">
-                    <caption style="position: absolute; width: 1px; height: 1px; overflow: hidden;">Programme détaillé des conférences et ateliers</caption>
-                    <thead>
-                    <tr>
-                        <th scope="col">Horaire</th>
-                        <th scope="col">Mission</th>
-                        <th scope="col">Pilote (Speaker)</th>
-                        <th scope="col">Lieu</th>
-                    </tr>
-                    </thead>
+                        <caption class="sr-only">Programme détaillé des conférences et ateliers</caption>
+                        <thead>
+                        <tr>
+                            <th scope="col">Horaire</th>
+                            <th scope="col">Mission</th>
+                            <th scope="col">Pilote (Speaker)</th>
+                            <th scope="col">Lieu</th>
+                        </tr>
+                        </thead>
                     <tbody>
                     <?php
                     $sql_programme = "SELECT p.heure_debut, pr.intitule AS mission, pr.description AS description_prestation, u.nom_artiste AS pilote, s.nom_scene AS lieu FROM web2026_Programmation p JOIN web2026_Prestation pr ON p.prestation_id = pr.pid JOIN web2026_Utilisateur u ON pr.artiste_id = u.uid JOIN web2026_Scene s ON p.scene_id = s.sid ORDER BY p.heure_debut ASC";

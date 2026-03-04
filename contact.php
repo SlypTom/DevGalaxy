@@ -19,8 +19,8 @@ include 'header-footer/header.php';
 
             <div class="contact-form-wrapper">
                 <form action="#" method="post" class="space-form">
-                    <fieldset style="border: none; padding: 0; margin: 0;">
-                        <legend style="position: absolute; width: 1px; height: 1px; overflow: hidden;">Envoyez un message à l'équipe DevGalaxy</legend>
+                    <fieldset class="fieldset-reset">
+                        <legend class="sr-only">Envoyez un message à l'équipe DevGalaxy</legend>
 
                         <div class="form-group">
                             <label for="nom">Nom de code *</label>

@@ -85,8 +85,8 @@ include 'header-footer/header.php';
 
         <div class="inscription-form-wrapper">
             <form action="inscription.php" method="post" class="space-form" aria-label="Création de votre compte">
-                <fieldset style="border: none; padding: 0; margin: 0;">
-                    <legend style="position: absolute; width: 1px; height: 1px; overflow: hidden;">Création de votre compte Artiste</legend>
+                <fieldset class="fieldset-reset">
+                    <legend class="sr-only">Création de votre compte Artiste</legend>
 
                     <h1>Inscription Pilote</h1>
 

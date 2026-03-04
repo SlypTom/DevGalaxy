@@ -60,10 +60,10 @@ include 'header-footer/header.php';
 
             <div class="inscription-form-wrapper">
                 <form action="connexion.php" method="post" class="space-form" aria-label="Formulaire de connexion">
-                    <fieldset style="border: none; padding: 0; margin: 0;">
-                        <legend style="position: absolute; width: 1px; height: 1px; overflow: hidden;">Connectez-vous à votre espace personnel</legend>
+                    <fieldset class="fieldset-reset">
+                        <legend class="sr-only">Connectez-vous à votre espace personnel</legend>
 
-                        <h1 style="text-align: left; color: #a855f7; margin-bottom: 20px;">Connexion au Vaisseau</h1>
+                        <h1 class="u-text-left u-mb-20">Connexion au Vaisseau</h1>
 
                         <?php if (!empty($erreurs)): ?>
                             <div class="alert">
@@ -85,8 +85,8 @@ include 'header-footer/header.php';
                             <input type="password" id="mdp" name="mdp" placeholder="********" required>
                         </div>
 
-                        <div style="margin-bottom: 20px; text-align: right;">
-                            <a href="motDePasseOublie.php" style="color: #67e8f9; font-size: 0.85rem; text-decoration: underline;">Mot de passe oublié ?</a>
+                        <div class="u-mb-20 u-text-left" style="text-align: right;">
+                            <a href="motDePasseOublie.php" class="link-accent">Mot de passe oublié ?</a>
                         </div>
 
                         <button type="submit" class="btn-primary">S'authentifier 🚀</button>
