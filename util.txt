@@ -1,1 +1,17 @@
-Référence : https://dev.events/conferences/cloud-brew-2025-zajuxev3
+Fichier log de l'application
+
+Organisateur :
+
+admin@devgalaxy.com
+organisateur123
+
+Artistes :
+
+sarah@devgalaxy.com
+password123
+
+dave@devgalaxy.com
+password123
+
+hal@devgalaxy.com
+password123
