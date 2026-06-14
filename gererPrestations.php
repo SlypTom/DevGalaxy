@@ -1,153 +1,193 @@
 <?php
+
+use Model\Categorie;
+use Model\Prestation;
+
 session_start();
-// Vérification de sécurité : il faut être connecté
 if (!isset($_SESSION['user_id'])) {
     header("Location: connexion.php");
     exit;
 }
 
-require_once 'config/db.php';
-$user_id = $_SESSION['user_id'];
-$erreurs = [];
+require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/app/Model/Prestation.php';
+require_once __DIR__ . '/app/Model/Categorie.php';
+
+$user_id        = $_SESSION['user_id'];
+$erreurs        = [];
+$erreurs_champs = [];
 $message_succes = "";
 
-// --- 1. GESTION DE LA SUPPRESSION (UC-C.3) ---
-if (isset($_GET['supprimer_id'])) {
-    $id_a_supprimer = $_GET['supprimer_id'];
+$ancien_intitule    = "";
+$ancienne_desc      = "";
+$ancienne_categorie = "";
 
-    // Vérification : La prestation est-elle déjà dans le programme ?
-    $stmt_check = $pdo->prepare("SELECT COUNT(*) FROM web2026_Programmation WHERE prestation_id = :pid");
-    $stmt_check->execute(['pid' => $id_a_supprimer]);
-    $est_programme = $stmt_check->fetchColumn();
-
-    if ($est_programme > 0) {
+// --- SUPPRESSION via POST (UC-C.3) ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'supprimer') {
+    $id_a_supprimer = intval($_POST['supprimer_id']);
+    if (!Prestation::belongsTo($id_a_supprimer, $user_id)) {
+        $erreurs[] = "Action non autorisée.";
+    } elseif (Prestation::isProgrammee($id_a_supprimer)) {
         $erreurs[] = "Impossible de supprimer cette prestation car elle fait partie du programme officiel. Veuillez contacter l'organisateur.";
     } else {
-        $stmt_delete = $pdo->prepare("DELETE FROM web2026_Prestation WHERE pid = :pid AND artiste_id = :uid");
-        if ($stmt_delete->execute(['pid' => $id_a_supprimer, 'uid' => $user_id])) {
+        if (Prestation::delete($id_a_supprimer, $user_id)) {
             $message_succes = "La prestation a été retirée de votre catalogue.";
         }
     }
 }
 
-// --- 2. GESTION DE L'AJOUT D'UNE PRESTATION (UC-C.1) ---
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'ajouter') {
-    $titre = trim($_POST['intitule']);
+// --- AJOUT via POST (UC-C.1) ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'ajouter') {
+    $titre       = trim($_POST['intitule']);
     $description = trim($_POST['description']);
-    $categorie_id = $_POST['categorie_id'];
+    $categorie_id = intval($_POST['categorie_id']);
 
-    if (empty($titre) || empty($description) || empty($categorie_id)) {
-        $erreurs[] = "Tous les champs obligatoires doivent être remplis.";
-    } else {
-        $sql_insert = "INSERT INTO web2026_Prestation (intitule, description, image, categorie_id, artiste_id) 
-                       VALUES (:titre, :desc, 'default.png', :cat_id, :uid)";
-        $stmt_insert = $pdo->prepare($sql_insert);
-        if ($stmt_insert->execute(['titre' => $titre, 'desc' => $description, 'cat_id' => $categorie_id, 'uid' => $user_id])) {
+    $ancien_intitule    = $titre;
+    $ancienne_desc      = $description;
+    $ancienne_categorie = $categorie_id;
+
+    if (empty($titre))       $erreurs_champs['intitule']    = "Le titre est obligatoire.";
+    if (!$categorie_id)      $erreurs_champs['categorie_id'] = "Veuillez sélectionner une catégorie.";
+    if (empty($description)) $erreurs_champs['description']  = "La description est obligatoire.";
+
+    // UC-C.1 : Gestion de l'image
+    $image_filename = 'default.png';
+    if (!empty($_FILES['image']['name'])) {
+        if ($_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+            $erreurs_champs['image'] = "Erreur lors du téléchargement de l'image.";
+        } else {
+            $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+            if (!in_array($ext, ['jpg','jpeg','png','gif','webp'])) {
+                $erreurs_champs['image'] = "Format non valide (jpg, png, gif, webp).";
+            } else {
+                $image_filename = uniqid('presta_') . '.' . $ext;
+                move_uploaded_file($_FILES['image']['tmp_name'],
+                    __DIR__ . '/img/prestations/' . $image_filename);
+            }
+        }
+    }
+
+    if (empty($erreurs_champs)) {
+        if (Prestation::create($titre, $description, $image_filename, $categorie_id, $user_id)) {
             $message_succes = "Nouvelle prestation ajoutée avec succès à votre catalogue !";
+            $ancien_intitule = $ancienne_desc = $ancienne_categorie = "";
         }
     }
 }
 
-// --- 3. RÉCUPÉRATION DES DONNÉES POUR L'AFFICHAGE ---
-$stmt_catalogue = $pdo->prepare("
-    SELECT p.*, c.intitule AS nom_categorie 
-    FROM web2026_Prestation p 
-    JOIN web2026_Categorie c ON p.categorie_id = c.cid 
-    WHERE p.artiste_id = :uid
-");
-$stmt_catalogue->execute(['uid' => $user_id]);
-$prestations = $stmt_catalogue->fetchAll();
+$prestations = Prestation::findByArtiste($user_id);
+$categories  = Categorie::findAll();
 
-$categories = $pdo->query("SELECT * FROM web2026_Categorie")->fetchAll();
-
-include 'header-footer/header.php';
+include 'app/View/header-footer/header.php';
 ?>
 
-    <main class="page-prestations">
-        <div class="center">
-            <a href="dashboard.php" class="back-link">← Retour au tableau de bord</a>
-            <h1>Gestion de mon Catalogue</h1>
-            <p>Gérez vos modules de formation et conférences.</p>
-        </div>
+<main class="page-prestations">
+    <div class="center">
+        <a href="dashboard.php" class="back-link">← Retour au tableau de bord</a>
+        <h1>Gestion de mon Catalogue</h1>
+        <p>Gérez vos modules de formation et conférences.</p>
+    </div>
 
-        <div class="alert-container">
-            <?php if (!empty($erreurs)): ?>
-                <div class="alert-error">
-                    <ul>
-                        <?php foreach ($erreurs as $erreur): ?>
-                            <li><?= htmlspecialchars($erreur) ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            <?php endif; ?>
+    <div class="alert-container">
+        <?php if (!empty($erreurs)): ?>
+            <div class="alert-error"><ul><?php foreach ($erreurs as $e): ?>
+                <li><?= htmlspecialchars($e) ?></li>
+            <?php endforeach; ?></ul></div>
+        <?php endif; ?>
+        <?php if (!empty($message_succes)): ?>
+            <div class="alert-success"><?= htmlspecialchars($message_succes) ?></div>
+        <?php endif; ?>
+    </div>
 
-            <?php if (!empty($message_succes)): ?>
-                <div class="alert-success">
-                    <?= htmlspecialchars($message_succes) ?>
-                </div>
-            <?php endif; ?>
-        </div>
-
-        <div class="prestations-grid prestations-wrapper">
-            <?php if (count($prestations) > 0): ?>
-                <?php foreach ($prestations as $presta): ?>
-                    <article class="prestation-card catalog">
-                        <div class="card-header">
-                            <span class="category-badge security"><?= htmlspecialchars($presta['nom_categorie']) ?></span>
+    <div class="prestations-grid prestations-wrapper">
+        <?php if (count($prestations) > 0): ?>
+            <?php foreach ($prestations as $presta): ?>
+                <article class="prestation-card catalog">
+                    <div class="card-header">
+                        <span class="category-badge security"><?= htmlspecialchars($presta['nom_categorie']) ?></span>
+                        <?php $img_url = Prestation::getImageUrl($presta); ?>
+                        <?php if ($img_url): ?>
+                            <img src="<?= htmlspecialchars($img_url) ?>" alt="<?= htmlspecialchars($presta['intitule']) ?>" class="prestation-img-real">
+                        <?php else: ?>
                             <div class="prestation-img-placeholder bg-gradient-catalog">
                                 <code><?= htmlspecialchars(substr($presta['intitule'], 0, 3)) ?></code>
                             </div>
-                        </div>
-                        <div class="card-body">
-                            <h3><?= htmlspecialchars($presta['intitule']) ?></h3>
-                            <p class="description"><?= htmlspecialchars($presta['description']) ?></p>
-                        </div>
-                        <div class="card-footer card-actions">
-                            <a href="gererPrestations.php?supprimer_id=<?= $presta['pid'] ?>"
-                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette prestation ? Cette action est irréversible.');"
-                               class="btn-primary btn-danger btn-small">
-                                🗑️ Supprimer
-                            </a>
-                            <a href="#" class="btn-primary btn-outline btn-small">✏️ Modifier</a>
-                        </div>
-                    </article>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <div class="catalog-empty">
-                    <p>Votre catalogue est vide. Ajoutez votre première prestation ci-dessous !</p>
-                </div>
-            <?php endif; ?>
-        </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="card-body">
+                        <h3><?= htmlspecialchars($presta['intitule']) ?></h3>
+                        <p class="description"><?= htmlspecialchars($presta['description']) ?></p>
+                    </div>
+                    <div class="card-footer card-actions">
+                        <!-- Suppression sans JavaScript : formulaire POST avec page de confirmation PHP -->
+                        <form method="post" action="confirmerSuppression.php">
+                            <input type="hidden" name="type" value="prestation">
+                            <input type="hidden" name="id" value="<?= $presta['pid'] ?>">
+                            <input type="hidden" name="retour" value="gererPrestations.php">
+                            <input type="hidden" name="message" value="Êtes-vous sûr de vouloir supprimer la prestation « <?= htmlspecialchars($presta['intitule']) ?> » ? Cette action est irréversible.">
+                            <button type="submit" class="btn-primary btn-danger btn-small">🗑️ Supprimer</button>
+                        </form>
+                        <a href="modifierPrestation.php?id=<?= $presta['pid'] ?>" class="btn-primary btn-outline btn-small">✏️ Modifier</a>
+                    </div>
+                </article>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="catalog-empty">
+                <p>Votre catalogue est vide. Ajoutez votre première prestation ci-dessous !</p>
+            </div>
+        <?php endif; ?>
+    </div>
 
-        <div class="form-container">
-            <h2 class="form-title">Ajouter une nouvelle prestation</h2>
+    <div class="form-container">
+        <h2 class="form-title">Ajouter une nouvelle prestation</h2>
+        <form action="gererPrestations.php" method="post" enctype="multipart/form-data" class="space-form">
+            <input type="hidden" name="action" value="ajouter">
 
-            <form action="gererPrestations.php" method="post" class="space-form">
-                <input type="hidden" name="action" value="ajouter">
+            <div class="form-group <?= isset($erreurs_champs['intitule']) ? 'field-error' : '' ?>">
+                <label for="intitule">Titre de la prestation *</label>
+                <input type="text" id="intitule" name="intitule"
+                       value="<?= htmlspecialchars($ancien_intitule) ?>" required>
+                <?php if (isset($erreurs_champs['intitule'])): ?>
+                    <span class="error-message"><?= htmlspecialchars($erreurs_champs['intitule']) ?></span>
+                <?php endif; ?>
+            </div>
 
-                <div class="form-group">
-                    <label for="intitule">Titre de la prestation *</label>
-                    <input type="text" id="intitule" name="intitule" placeholder="Ex: Atelier Javascript avancé" required>
-                </div>
+            <div class="form-group <?= isset($erreurs_champs['categorie_id']) ? 'field-error' : '' ?>">
+                <label for="categorie_id">Catégorie *</label>
+                <select id="categorie_id" name="categorie_id" required>
+                    <option value="">-- Sélectionnez une catégorie --</option>
+                    <?php foreach ($categories as $cat): ?>
+                        <option value="<?= $cat['cid'] ?>"
+                            <?= ($ancienne_categorie == $cat['cid']) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($cat['intitule']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <?php if (isset($erreurs_champs['categorie_id'])): ?>
+                    <span class="error-message"><?= htmlspecialchars($erreurs_champs['categorie_id']) ?></span>
+                <?php endif; ?>
+            </div>
 
-                <div class="form-group">
-                    <label for="categorie_id">Catégorie *</label>
-                    <select id="categorie_id" name="categorie_id" required>
-                        <option value="">-- Sélectionnez une catégorie --</option>
-                        <?php foreach ($categories as $cat): ?>
-                            <option value="<?= $cat['cid'] ?>"><?= htmlspecialchars($cat['intitule']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+            <!-- UC-C.1 : Champ Image -->
+            <div class="form-group <?= isset($erreurs_champs['image']) ? 'field-error' : '' ?>">
+                <label for="image">Image de la prestation *</label>
+                <input type="file" id="image" name="image" accept="image/*" required>
+                <?php if (isset($erreurs_champs['image'])): ?>
+                    <span class="error-message"><?= htmlspecialchars($erreurs_champs['image']) ?></span>
+                <?php endif; ?>
+            </div>
 
-                <div class="form-group">
-                    <label for="description">Description détaillée *</label>
-                    <textarea id="description" name="description" rows="4" placeholder="Décrivez le contenu de votre mission..." required></textarea>
-                </div>
+            <div class="form-group <?= isset($erreurs_champs['description']) ? 'field-error' : '' ?>">
+                <label for="description">Description détaillée *</label>
+                <textarea id="description" name="description" rows="4" required><?= htmlspecialchars($ancienne_desc) ?></textarea>
+                <?php if (isset($erreurs_champs['description'])): ?>
+                    <span class="error-message"><?= htmlspecialchars($erreurs_champs['description']) ?></span>
+                <?php endif; ?>
+            </div>
 
-                <button type="submit" class="btn-primary">Ajouter au catalogue 🚀</button>
-            </form>
-        </div>
-    </main>
+            <button type="submit" class="btn-primary">Ajouter au catalogue 🚀</button>
+        </form>
+    </div>
+</main>
 
-<?php include 'header-footer/footer.php'; ?>
+<?php include 'app/View/header-footer/footer.php'; ?>

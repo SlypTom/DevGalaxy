@@ -1,6 +1,9 @@
 <?php
 session_start();
-require_once 'config/db.php';
+require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/app/Model/Prestation.php';
+require_once __DIR__ . '/app/Model/Utilisateur.php';
+require_once __DIR__ . '/app/Model/Categorie.php';
 
 // --- 1. RÉCUPÉRATION DES DONNÉES POUR LES LISTES DÉROULANTES ---
 $artistes = $pdo->query("SELECT uid, nom, prenom, nom_artiste FROM web2026_Utilisateur WHERE est_organisateur = 0")->fetchAll();
@@ -54,7 +57,7 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $prestations = $stmt->fetchAll();
 
-include 'header-footer/header.php';
+include 'app/View/header-footer/header.php';
 ?>
 
 <main class="page-prestations">
@@ -168,4 +171,4 @@ include 'header-footer/header.php';
     </div>
 </main>
 
-<?php include 'header-footer/footer.php'; ?>
+<?php include 'app/View/header-footer/footer.php'; ?>

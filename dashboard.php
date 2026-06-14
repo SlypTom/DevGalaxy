@@ -5,9 +5,16 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: connexion.php");
     exit;
 }
+// Un organisateur n'a pas de tableau de bord artiste, on le redirige
+if (!empty($_SESSION['est_organisateur'])) {
+    header("Location: gestionProgramme.php");
+    exit;
+}
 
 // 2. Connexion à la base de données
-require_once 'config/db.php';
+require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/app/Model/Utilisateur.php';
+require_once __DIR__ . '/app/Model/Programmation.php';
 
 // 3. Récupération des informations de l'utilisateur connecté
 $user_id = $_SESSION['user_id'];
@@ -31,7 +38,7 @@ $stmt_planning = $pdo->prepare($sql_planning);
 $stmt_planning->execute(['uid' => $user_id]);
 $planning = $stmt_planning->fetchAll();
 
-include 'header-footer/header.php';
+include 'app/View/header-footer/header.php';
 ?>
 
     <main class="inscription-section">
@@ -77,5 +84,5 @@ include 'header-footer/header.php';
     </main>
 
 <?php
-include 'header-footer/footer.php';
+include 'app/View/header-footer/footer.php';
 ?>

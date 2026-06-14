@@ -2,96 +2,96 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/app/Model/Programmation.php';
+require_once __DIR__ . '/app/Model/Scene.php';
 
-require_once 'config/db.php';
-
-include 'header-footer/header.php';
+include 'app/View/header-footer/header.php';
 
 ?>
-<main>
-    <section class="presentation">
-        <div class="center">
-            <img src="img/logo.png" alt="Logo officiel de la convention DevGalaxy">
-            <h1>Dev Galaxy</h1>
-            <p>Codez au-delà de l'atmosphère. L'avenir du développement web commence ici.</p>
-            <p>Une odyssée technologique de 24h pour explorer les frontières du Backend, du Frontend et de l'Intelligence Artificielle.</p>
-            <p>Bienvenue à bord de DevGalaxy 2025, la convention ultime pour les développeurs qui refusent de garder les pieds sur terre. <br>Dans un écosystème numérique en constante expansion, il ne suffit plus de connaître son langage ; il faut comprendre l'univers qui l'entoure.
+    <main>
+        <section class="presentation">
+            <div class="center">
+                <img src="assets/img/logo.png" alt="Logo officiel de la convention DevGalaxy">
+                <h1>Dev Galaxy</h1>
+                <p>Codez au-delà de l'atmosphère. L'avenir du développement web commence ici.</p>
+                <p>Une odyssée technologique de 24h pour explorer les frontières du Backend, du Frontend et de l'Intelligence Artificielle.</p>
+                <p>Bienvenue à bord de DevGalaxy 2025, la convention ultime pour les développeurs qui refusent de garder les pieds sur terre. <br>Dans un écosystème numérique en constante expansion, il ne suffit plus de connaître son langage ; il faut comprendre l'univers qui l'entoure.
 
-                <br>Cette année, nous transformons le Space Center en un véritable vaisseau amiral de l'innovation. <br>Que vous soyez un architecte de données naviguant dans le cloud ou un designer sculptant des interfaces en apesanteur, DevGalaxy est votre station de ravitaillement.</p>
-        </div>
-    </section>
-
-    <section class="programme-section">
-        <div class="center">
-            <h2>Programme de vol</h2>
-
-            <div class="table-wrapper">
-                <table class="events-table">
-                        <caption class="sr-only">Programme détaillé des conférences et ateliers</caption>
-                        <thead>
-                        <tr>
-                            <th scope="col">Horaire</th>
-                            <th scope="col">Mission</th>
-                            <th scope="col">Pilote (Speaker)</th>
-                            <th scope="col">Lieu</th>
-                        </tr>
-                        </thead>
-                    <tbody>
-                    <?php
-                    $sql_programme = "SELECT p.heure_debut, pr.intitule AS mission, pr.description AS description_prestation, u.nom_artiste AS pilote, s.nom_scene AS lieu FROM web2026_Programmation p JOIN web2026_Prestation pr ON p.prestation_id = pr.pid JOIN web2026_Utilisateur u ON pr.artiste_id = u.uid JOIN web2026_Scene s ON p.scene_id = s.sid ORDER BY p.heure_debut ASC";
-
-                    $stmt_prog = $pdo->query($sql_programme);
-                    $programme = $stmt_prog->fetchAll();
-
-                    if (count($programme) > 0):
-                        foreach ($programme as $event):
-                            $heure = substr($event['heure_debut'], 0, 5);
-
-                            // --- GESTION DYNAMIQUE DES COULEURS DES BADGES ---
-                            $badge_class = 'badge-jupiter'; // Par défaut
-                            $lieu_minuscule = strtolower($event['lieu']);
-
-                            if (strpos($lieu_minuscule, 'mars') !== false) {
-                                $badge_class = 'badge-mars';
-                            } elseif (strpos($lieu_minuscule, 'saturne') !== false) {
-                                $badge_class = 'badge-saturne';
-                            }
-                            // ---------------------------------------------------
-                            ?>
-
-                            <tr>
-                                <td class="time"><?= htmlspecialchars($heure) ?></td>
-                                <td>
-                                    <strong class="event-title">
-                                        <a href="detailsPrestation.php">
-                                            <?= htmlspecialchars($event['mission']) ?>
-                                        </a>
-                                    </strong>
-                                    <span class="event-desc"><?= htmlspecialchars($event['description_prestation']) ?></span>
-                                </td>
-                                <td><?= htmlspecialchars($event['pilote']) ?></td>
-
-                                <td><span class="badge <?= $badge_class ?>"><?= htmlspecialchars($event['lieu']) ?></span></td>
-                            </tr>
-
-                        <?php
-                        endforeach;
-                    else:
-                        ?>
-
-                        <tr>
-                            <td colspan="4">
-                                Le programme est en cours d'élaboration. Revenez bientôt !
-                            </td>
-                        </tr>
-
-                    <?php endif; ?>
-                    </tbody>
-                </table>
+                    <br>Cette année, nous transformons le Space Center en un véritable vaisseau amiral de l'innovation. <br>Que vous soyez un architecte de données naviguant dans le cloud ou un designer sculptant des interfaces en apesanteur, DevGalaxy est votre station de ravitaillement.</p>
             </div>
-        </div>
-    </section>
-</main>
+        </section>
+
+        <section class="programme-section">
+            <div class="center">
+                <h2>Programme de vol</h2>
+
+                <div class="table-wrapper">
+                    <?php
+                    // Récupération de toutes les scènes (colonnes)
+                    $scenes = $pdo->query("SELECT * FROM web2026_Scene ORDER BY sid ASC")->fetchAll();
+
+                    // Récupération du programme complet
+                    $sql_programme = "
+                    SELECT prog.heure_debut, prog.scene_id, prog.prestation_id,
+                           pr.pid, pr.intitule AS mission,
+                           u.nom_artiste, u.prenom, u.nom
+                    FROM web2026_Programmation prog
+                    JOIN web2026_Prestation pr ON prog.prestation_id = pr.pid
+                    JOIN web2026_Utilisateur u ON pr.artiste_id = u.uid
+                    ORDER BY prog.heure_debut ASC
+                ";
+                    $programme = $pdo->query($sql_programme)->fetchAll();
+
+                    // Construction de la grille 2D : $grille[heure][scene_id] = données
+                    $grille = [];
+                    foreach ($programme as $event) {
+                        $heure = substr($event['heure_debut'], 0, 5);
+                        if (!isset($grille[$heure])) {
+                            $grille[$heure] = [];
+                        }
+                        $grille[$heure][$event['scene_id']] = $event;
+                    }
+                    ?>
+
+                    <?php if (empty($grille)): ?>
+                        <p class="no-results">Le programme est en cours d'élaboration. Revenez bientôt !</p>
+                    <?php else: ?>
+                        <table class="events-table schedule-grid">
+                            <caption class="sr-only">Programme de la journée par scène et par horaire</caption>
+                            <thead>
+                            <tr>
+                                <th scope="col">Heure</th>
+                                <?php foreach ($scenes as $scene): ?>
+                                    <th scope="col"><?= htmlspecialchars($scene['nom_scene']) ?></th>
+                                <?php endforeach; ?>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach ($grille as $heure => $events_par_scene): ?>
+                                <tr>
+                                    <td class="time"><strong><?= htmlspecialchars($heure) ?></strong></td>
+                                    <?php foreach ($scenes as $scene): ?>
+                                        <td class="schedule-cell">
+                                            <?php if (isset($events_par_scene[$scene['sid']])): ?>
+                                                <?php $e = $events_par_scene[$scene['sid']];
+                                                $pilote = !empty($e['nom_artiste']) ? $e['nom_artiste'] : $e['prenom'].' '.$e['nom']; ?>
+                                                <a href="detailsPrestation.php?id=<?= $e['pid'] ?>" class="schedule-event">
+                                                    <strong><?= htmlspecialchars($e['mission']) ?></strong>
+                                                    <span><?= htmlspecialchars($pilote) ?></span>
+                                                </a>
+                                            <?php endif; ?>
+                                        </td>
+                                    <?php endforeach; ?>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </section>
+    </main>
 <?php
-include 'header-footer/footer.php';
+include 'app/View/header-footer/footer.php';
 ?>

@@ -7,9 +7,10 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-require_once 'config/db.php';
+require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/app/Model/Utilisateur.php';
 $user_id = $_SESSION['user_id'];
-$erreurs = [];
+$erreurs_champs = [];
 $message_succes = "";
 
 // RÉCUPÉRATION DES DONNÉES ACTUELLES
@@ -17,55 +18,61 @@ $stmt = $pdo->prepare("SELECT * FROM web2026_Utilisateur WHERE uid = :uid");
 $stmt->execute(['uid' => $user_id]);
 $user = $stmt->fetch();
 
+// Valeurs affichées dans le formulaire (repopulation)
+$nom         = $user['nom'];
+$prenom      = $user['prenom'];
+$nom_artiste = $user['nom_artiste'];
+$email       = $user['email'];
+$description = $user['description'];
+
 // TRAITEMENT DU FORMULAIRE
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nom = trim($_POST['nom']);
-    $prenom = trim($_POST['prenom']);
+    $nom         = trim($_POST['nom']);
+    $prenom      = trim($_POST['prenom']);
     $nom_artiste = trim($_POST['nom_artiste']);
-    $email = trim($_POST['email']);
+    $email       = trim($_POST['email']);
     $description = trim($_POST['description']);
     $nouveau_mdp = $_POST['nouveau_mdp'];
-    $conf_mdp = $_POST['conf_mdp'];
+    $conf_mdp    = $_POST['conf_mdp'];
 
-    // Vérifications de base
-    if (empty($nom) || empty($prenom) || empty($email)) {
-        $erreurs[] = "Les champs Nom, Prénom et Email sont obligatoires.";
+    // --- VALIDATION PAR CHAMP ---
+    if (empty($nom)) {
+        $erreurs_champs['nom'] = "Le nom est obligatoire.";
     }
-
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $erreurs[] = "Le format de l'adresse e-mail n'est pas valide.";
+    if (empty($prenom)) {
+        $erreurs_champs['prenom'] = "Le prénom est obligatoire.";
     }
-
-    if ($email !== $user['email'] && empty($erreurs)) {
+    if (empty($email)) {
+        $erreurs_champs['email'] = "L'adresse e-mail est obligatoire.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $erreurs_champs['email'] = "Le format de l'adresse e-mail n'est pas valide.";
+    } elseif ($email !== $user['email']) {
         $stmt_check = $pdo->prepare("SELECT COUNT(*) FROM web2026_Utilisateur WHERE email = :email AND uid != :uid");
         $stmt_check->execute(['email' => $email, 'uid' => $user_id]);
         if ($stmt_check->fetchColumn() > 0) {
-            $erreurs[] = "Cette adresse e-mail est déjà utilisée par un autre compte.";
+            $erreurs_champs['email'] = "Cette adresse e-mail est déjà utilisée par un autre compte.";
         }
     }
-
-    if (!empty($nouveau_mdp)) {
-        if ($nouveau_mdp !== $conf_mdp) {
-            $erreurs[] = "Les nouveaux mots de passe ne correspondent pas.";
-        }
+    if (!empty($nouveau_mdp) && $nouveau_mdp !== $conf_mdp) {
+        $erreurs_champs['conf_mdp'] = "Les nouveaux mots de passe ne correspondent pas.";
     }
 
     // MISE À JOUR DANS LA BASE DE DONNÉES
-    if (empty($erreurs)) {
+    if (empty($erreurs_champs)) {
         if (!empty($nouveau_mdp)) {
-            $mdp_hashe = password_hash($nouveau_mdp, PASSWORD_DEFAULT);
+            // Stockage en clair (selon CDC)
             $sql_update = "UPDATE web2026_Utilisateur SET nom = :nom, prenom = :prenom, nom_artiste = :nom_artiste, email = :email, description = :description, mot_passe_hashe = :mdp WHERE uid = :uid";
             $stmt_update = $pdo->prepare($sql_update);
             $succes = $stmt_update->execute([
-                'nom' => $nom, 'prenom' => $prenom, 'nom_artiste' => $nom_artiste,
-                'email' => $email, 'description' => $description, 'mdp' => $mdp_hashe, 'uid' => $user_id
+                    'nom' => $nom, 'prenom' => $prenom, 'nom_artiste' => $nom_artiste,
+                    'email' => $email, 'description' => $description, 'mdp' => $nouveau_mdp, 'uid' => $user_id
             ]);
         } else {
             $sql_update = "UPDATE web2026_Utilisateur SET nom = :nom, prenom = :prenom, nom_artiste = :nom_artiste, email = :email, description = :description WHERE uid = :uid";
             $stmt_update = $pdo->prepare($sql_update);
             $succes = $stmt_update->execute([
-                'nom' => $nom, 'prenom' => $prenom, 'nom_artiste' => $nom_artiste,
-                'email' => $email, 'description' => $description, 'uid' => $user_id
+                    'nom' => $nom, 'prenom' => $prenom, 'nom_artiste' => $nom_artiste,
+                    'email' => $email, 'description' => $description, 'uid' => $user_id
             ]);
         }
 
@@ -79,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-include 'header-footer/header.php';
+include 'app/View/header-footer/header.php';
 ?>
 
     <main class="page-prestations">
@@ -90,16 +97,6 @@ include 'header-footer/header.php';
         </div>
 
         <div class="alert-container">
-            <?php if (!empty($erreurs)): ?>
-                <div class="alert-error">
-                    <ul>
-                        <?php foreach ($erreurs as $erreur): ?>
-                            <li><?= htmlspecialchars($erreur) ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            <?php endif; ?>
-
             <?php if (!empty($message_succes)): ?>
                 <div class="alert-success">
                     <?= htmlspecialchars($message_succes) ?>
@@ -110,29 +107,42 @@ include 'header-footer/header.php';
         <div class="form-container">
             <form action="editerProfil.php" method="post" class="space-form">
 
-                <div class="form-group">
+                <div class="form-group <?= isset($erreurs_champs['nom']) ? 'field-error' : '' ?>">
                     <label for="nom">Nom *</label>
-                    <input type="text" id="nom" name="nom" value="<?= htmlspecialchars(isset($user['nom']) ? $user['nom'] : '') ?>" required>
+                    <input type="text" id="nom" name="nom" value="<?= htmlspecialchars($nom) ?>" required>
+                    <?php if (isset($erreurs_champs['nom'])): ?>
+                        <span class="error-message"><?= htmlspecialchars($erreurs_champs['nom']) ?></span>
+                    <?php endif; ?>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group <?= isset($erreurs_champs['prenom']) ? 'field-error' : '' ?>">
                     <label for="prenom">Prénom *</label>
-                    <input type="text" id="prenom" name="prenom" value="<?= htmlspecialchars(isset($user['prenom']) ? $user['prenom'] : '') ?>" required>
+                    <input type="text" id="prenom" name="prenom" value="<?= htmlspecialchars($prenom) ?>" required>
+                    <?php if (isset($erreurs_champs['prenom'])): ?>
+                        <span class="error-message"><?= htmlspecialchars($erreurs_champs['prenom']) ?></span>
+                    <?php endif; ?>
                 </div>
 
-                <div class="form-group">
-                    <label for="nom_artiste">Nom d'artiste / Pseudo</label>
-                    <input type="text" id="nom_artiste" name="nom_artiste" value="<?= htmlspecialchars(isset($user['nom_artiste']) ? $user['nom_artiste'] : '') ?>">
-                </div>
+                <?php if (empty($_SESSION['est_organisateur'])): ?>
+                    <div class="form-group">
+                        <label for="nom_artiste">Nom d'artiste / Pseudo</label>
+                        <input type="text" id="nom_artiste" name="nom_artiste" value="<?= htmlspecialchars($nom_artiste) ?>">
+                    </div>
+                <?php else: ?>
+                    <input type="hidden" name="nom_artiste" value="">
+                <?php endif; ?>
 
-                <div class="form-group">
+                <div class="form-group <?= isset($erreurs_champs['email']) ? 'field-error' : '' ?>">
                     <label for="email">Email de liaison *</label>
-                    <input type="email" id="email" name="email" value="<?= htmlspecialchars(isset($user['email']) ? $user['email'] : '') ?>" required>
+                    <input type="email" id="email" name="email" value="<?= htmlspecialchars($email) ?>" required>
+                    <?php if (isset($erreurs_champs['email'])): ?>
+                        <span class="error-message"><?= htmlspecialchars($erreurs_champs['email']) ?></span>
+                    <?php endif; ?>
                 </div>
 
                 <div class="form-group">
                     <label for="description">Biographie / Description</label>
-                    <textarea id="description" name="description" rows="5"><?= htmlspecialchars(isset($user['description']) ? $user['description'] : '') ?></textarea>
+                    <textarea id="description" name="description" rows="5"><?= htmlspecialchars($description) ?></textarea>
                 </div>
 
                 <h3 class="password-section-title">Sécurité</h3>
@@ -143,9 +153,12 @@ include 'header-footer/header.php';
                     <input type="password" id="nouveau_mdp" name="nouveau_mdp" placeholder="********">
                 </div>
 
-                <div class="form-group">
+                <div class="form-group <?= isset($erreurs_champs['conf_mdp']) ? 'field-error' : '' ?>">
                     <label for="conf_mdp">Confirmer le nouveau mot de passe</label>
                     <input type="password" id="conf_mdp" name="conf_mdp" placeholder="********">
+                    <?php if (isset($erreurs_champs['conf_mdp'])): ?>
+                        <span class="error-message"><?= htmlspecialchars($erreurs_champs['conf_mdp']) ?></span>
+                    <?php endif; ?>
                 </div>
 
                 <button type="submit" class="btn-primary">Mettre à jour mes informations</button>
@@ -153,4 +166,4 @@ include 'header-footer/header.php';
         </div>
     </main>
 
-<?php include 'header-footer/footer.php'; ?>
+<?php include 'app/View/header-footer/footer.php'; ?>
